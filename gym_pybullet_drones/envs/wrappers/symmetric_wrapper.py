@@ -26,10 +26,10 @@ class SymmetricWrapper(gym.Wrapper):
         # print(f"symmatric wrapper action given:{action}")
         # Adjust action
         if self.positive:
-            new_action = action
+            new_action = action[0]
         else:
-            x, y, z = action
-            new_action = np.reshape(np.array([-1 * x, y, z]),self.NUM_DRONES, -1)
+            x, y, z = action[0]
+            new_action = np.reshape(np.array([-1 * x, y, z]),(self.NUM_DRONES, -1))
 
         # print(f"in symm, the action given is: {action}")
         state, reward, terminated, truncated, info = self.env.step(new_action)

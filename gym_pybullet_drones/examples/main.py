@@ -2,47 +2,46 @@ from gym_pybullet_drones.utils.util_graphics import print_green, print_red
 from gym_pybullet_drones.utils.util_file import load_json, make_dir
 from gym_pybullet_drones.utils.args_parsing import StoreDict
 from gym_pybullet_drones.utils.rl.lr_schedular import LinearLearningRateSchedule
+from stable_baselines3.common.monitor import Monitor
+from datetime import datetime
 import argparse
 import numpy as np
 import glob
 import os
 import time
-from gym_pybullet_drones.utils.utils import str2bool, sync
+import pybullet as p
 
+from pybullet_utils import bullet_client as bc
+
+import pybullet_data
+from gym_pybullet_drones.utils.utils import str2bool, sync
+from gym_pybullet_drones.algorithms.sacfd import SACfD
+from gym_pybullet_drones.algorithms.dual_buffer import DualReplayBuffer
+from stable_baselines3 import SAC,PPO
 
 from gym_pybullet_drones.envs.bullet_drone_env import BulletDroneEnv
-# from gym_pybullet_drones.envs.wrappers.two_dim_wrapper import TwoDimWrapper
+
 from gym_pybullet_drones.envs.wrappers.position_wrapper import PositionWrapper
 from gym_pybullet_drones.envs.wrappers.symmetric_wrapper import SymmetricWrapper
 from gym_pybullet_drones.envs.wrappers.hovering_wrapper import HoveringWrapper
-from gym_pybullet_drones.envs.wrappers.custom_monitor import CustomMonitor
 
 
 from stable_baselines3.common.evaluation import evaluate_policy
+from stable_baselines3.common.env_util import make_vec_env
+from stable_baselines3.common.callbacks import EvalCallback, StopTrainingOnRewardThreshold
+from gym_pybullet_drones.algorithms.SaveOnBestTrainingRewardCallback import SaveOnBestTrainingRewardCallback
+from stable_baselines3.common.results_plotter import load_results, ts2xy, plot_results
+from stable_baselines3.common import results_plotter
+import matplotlib.pyplot as plt
 
+from gym_pybullet_drones.algorithms.CustomEvalCallback import CustomEvalCallback
+    
+    
 
-DEMO_PATH = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/demonstration/rl_demos_new"
-DEFAULT_CHECKPOINT = 5000
+DEMO_PATH = "../demonstration/rl_demos_new"
+
 
 # ---------------------------------- RL UTIL ----------------------------------
-
-
-def generate_graphs(directory, phase="all"):
-    from gym_pybullet_drones.utils.plot_graphs import plot_reward_visualisation, read_csv_file
-    from gym_pybullet_drones.models.sample_trajectories_from_model import sample_trajectories
-
-    # visualise reward function used
-    print_green("Generating Reward Visualisation")
-    plot_reward_visualisation(directory, show=False)
-
-    # visualise training rewards
-    print_green("Generating Reward Logs")
-    read_csv_file(f"{directory}/logs.monitor.csv", show=False)
-
-    # visualise sample trajectories
-    print_green("Generating Sample Trajectories")
-    sample_trajectories(directory, show=False, phase=phase)
-
 
 # Shows the demonstration data in the enviornment - useful for verification purpose
 def show_in_env(env, transformed_data):
@@ -54,7 +53,7 @@ def show_in_env(env, transformed_data):
        
         obs, reward, done, truncated, _ = env.step(action)
         
-        # print(f"State: {next_obs}, Simulated State: {obs}")
+        print(f"State: {next_obs}, Simulated State: {obs}")
         # print(f"Reward: {reward1}, Simulated reward: {reward}")
         # print(f"action: {action}")
         
@@ -66,17 +65,14 @@ def show_in_env(env, transformed_data):
             print("1Episode finished")
             break
         
-    while not done and not truncated:
-        _, _, done, truncated, _ = env.step(obs[:3])
-        if done:
-            print("Episode finished")
-        if truncated:
-            print("Episode Truncated")
+    # while not done and not truncated:
+    #     _, _, done, truncated, _ = env.step(obs[:3])
+    #     if done:
+    #         print("Episode finished")
+    #     if truncated:
+    #         print("Episode Truncated")
             
         
-
-
-
 # ----------------------------------- DATA ------------------------------------
 
 def get_buffer_data(env, directory, show_demos_in_env):
@@ -140,44 +136,17 @@ def convert_data(env, json_data):
 # ---------------------------- ENVIRONMENT & AGENT ----------------------------
 
 
-def get_checkpointer(should_save, dir_name, checkpoint, phase="all"):
-    from gym_pybullet_drones.utils.CheckpointCallback import CheckpointCallback
-
-    if should_save and checkpoint is not None:
-        checkpoint_callback = CheckpointCallback(
-            save_freq=checkpoint,
-            save_path=f"../models/{dir_name}/training_logs/",
-            name_prefix="checkpoint",
-            save_replay_buffer=False,
-            save_vecnormalize=True,
-            phase=phase)
-        return checkpoint_callback
-    return None
-
-
-def get_env(dir_name, render_mode, phase):
+def get_agent(algorithm, env, demo_path, show_demos_in_env, hyperparams, filename):
     
-    env = HoveringWrapper(PositionWrapper(SymmetricWrapper(BulletDroneEnv(render_mode=render_mode, phase=phase, client = False))))
-    
-    
-    # env = (BulletDroneEnv(render_mode=render_mode, phase=phase)))
-    if dir_name is not None:
-        env = CustomMonitor(env, f"../models/{dir_name}/logs")
-
-    return env
-
-
-def get_agent(algorithm, env, demo_path, show_demos_in_env, hyperparams):
-    from gym_pybullet_drones.algorithms.sacfd import SACfD
-    from gym_pybullet_drones.algorithms.dual_buffer import DualReplayBuffer
-    from stable_baselines3 import SAC
 
     _policy = "MlpPolicy"
     _seed = 0
     _batch_size = hyperparams.get("batch_size", 64)
     _policy_kwargs = dict(net_arch=[128, 128, 64])
-    _lr_schedular = LinearLearningRateSchedule(hyperparams.get("lr", 0.0002))
-
+    _lr_schedular = LinearLearningRateSchedule(hyperparams.get("lr", 0.001))
+    _lr_schedular_sacfD = LinearLearningRateSchedule(hyperparams.get("lr", 0.001))
+    # _lr_schedular = 3e-4
+    
     print_green(f"Hyperparamters: seed={_seed}, batch_size={_batch_size}, policy_kwargs={_policy_kwargs}, " + (
                 f"lr={_lr_schedular}"))
 
@@ -190,6 +159,8 @@ def get_agent(algorithm, env, demo_path, show_demos_in_env, hyperparams):
             learning_rate=_lr_schedular,
             gamma=0.96,
             policy_kwargs=_policy_kwargs,
+            tensorboard_log= "./logs/",
+            verbose=1
         )
     elif algorithm == "SACfD":
         agent = SACfD(
@@ -200,8 +171,10 @@ def get_agent(algorithm, env, demo_path, show_demos_in_env, hyperparams):
             policy_kwargs=_policy_kwargs,
             learning_starts=0,
             gamma=0.96,
-            learning_rate=_lr_schedular,
-            replay_buffer_class=DualReplayBuffer
+            learning_rate=_lr_schedular_sacfD,
+            replay_buffer_class=DualReplayBuffer,
+            tensorboard_log= "./logs/",
+            verbose = 1
         )
         pre_train(agent, env, demo_path, show_demos_in_env)
 
@@ -209,38 +182,12 @@ def get_agent(algorithm, env, demo_path, show_demos_in_env, hyperparams):
         print_red("ERROR: Not yet implemented",)
     return agent
 
-
-def get_existing_agent(existing_agent_path, env):
-    from gym_pybullet_drones.algorithms.sacfd import SACfD
-
-    try:
-        # Check if the file path ends with .zip
-        if not existing_agent_path.endswith('.zip'):
-            raise ValueError("The file path must end with .zip")
-
-        # Load the SAC model directly from the zip file
-        model = SACfD.load(existing_agent_path)
-        model.set_env(env)
-
-        # Check for the replay buffer file in the same directory
-        replay_buffer_path = os.path.join(os.path.dirname(existing_agent_path), 'replay_buffer.pkl')
-        if os.path.exists(replay_buffer_path):
-            print("A replay buffer is being loaded.")
-            model.load_replay_buffer(replay_buffer_path)
-
-        print(f"Buffer Size: {model.replay_buffer.size()}")
-        return model
-    except Exception as e:
-        print(f"ERROR: {str(e)}")
-        exit(1)
-
-
 def pre_train(agent, env, demo_path, show_demos_in_env):
     from stable_baselines3.common.logger import configure
-    tmp_path = "/tmp/sb3_log/"
-    # set up logger
-    new_logger = configure(tmp_path, ["stdout", "csv", "tensorboard"])
-    agent.set_logger(new_logger)
+    # tmp_path = "/tmp/sb3_log/"
+    # # set up logger
+    # new_logger = configure(tmp_path, ["stdout", "csv", "tensorboard"])
+    # agent.set_logger(new_logger)
 
     data = get_buffer_data(env, demo_path, show_demos_in_env)
     # print(data[-1])
@@ -252,7 +199,7 @@ def pre_train(agent, env, demo_path, show_demos_in_env):
             # next_obs = next_obs[:7]  # Same for next observation
             # print(f"main action:{action}")
             # print(f"obs, next obs, action:{obs.shape},{next_obs.shape},{action.shape}")
-            print(f"Pre-training with obs, action, next state, reward: {obs},{action},{next_obs} reward: {reward}")
+            # print(f"Pre-training with obs, action, next state, reward: {obs},{action},{next_obs} reward: {reward}")
             agent.replay_buffer._add_offline(obs, next_obs, action, reward, done, info)
     print("Online Buffer Size: ", agent.replay_buffer.online_replay_buffer.size())
     print("Offline Buffer Size: ", agent.replay_buffer.offline_replay_buffer.size())
@@ -275,14 +222,15 @@ def test_agent(agent, env, num_episodes=5):
             action, _states = agent.predict(obs, deterministic=True)
             # print(f"Testing, action: {action}")
             obs, reward, done, truncated, info = env.step(action)
-            
-            payload_position = env.weight.get_position()
+            print("Obs:", obs, "\tAction", action, "\tReward:", reward, "\tTerminated:", done, "\tTruncated:", truncated)
+        
+            payload_position = env.get_wrapper_attr('weight').get_position()
             
             total_reward += reward
             env.render()
-            sync(counter, start, env.CTRL_TIMESTEP)
+            sync(counter, start, env.get_wrapper_attr('CTRL_TIMESTEP'))
             if done or truncated:
-                print(f"hi, obs:{obs.shape}")
+                # print(f"hi, obs:{obs.shape}")
                 break
             counter += 1
         
@@ -308,58 +256,136 @@ def test_agent(agent, env, num_episodes=5):
     # env.logger.save_as_csv("pid")
     # env.logger.plot()
 
-def main(algorithm, timesteps, filename, render_mode, demo_path, should_show_demo, checkpoint, hyperparams,
-         existing_agent, save_replay_buffer, phase):
-    save_data = filename is not None
-    dir_name = make_dir(filename)
-
-    env = get_env(dir_name, render_mode, phase)
+def main(algorithm, timesteps, demo_path, should_show_demo , hyperparams):
+    from gym_pybullet_drones.utils.TensorboardCallback import TensorboardCallback
+    #output folder named models
+    filename = os.path.join("models", 'save-algorithm-'+ algorithm +'-' +datetime.now().strftime("%m.%d.%Y_%H.%M.%S")+'-'+ str(timesteps))
     
-     #### Check the environment's spaces ########################
-    print('[INFO] Action space:', env.action_space)
-    print('[INFO] Observation space:', env.observation_space)
+    if not os.path.exists(filename):
+        os.makedirs(filename+'/')
+ 
+    train_env = Monitor(HoveringWrapper(PositionWrapper(SymmetricWrapper(BulletDroneEnv(gui=False)))), filename)
 
-    checkpoint_callback = get_checkpointer(save_data, dir_name, checkpoint, phase)
     
-    if existing_agent is None:        
-        agent = get_agent(algorithm, env, demo_path, should_show_demo, hyperparams)
+    #### Check the environment's spaces ########################
+    print('[INFO] Action space:', train_env.action_space)
+    print('[INFO] Observation space:', train_env.observation_space)
 
-    else:
-        agent = get_existing_agent(existing_agent, env)
-
-    agent.learn(timesteps, log_interval=10, progress_bar=True, callback=checkpoint_callback)
-
+    ##########################################################################
+    #################### Train and evaluate the model ########################
+    ##########################################################################
+    
+    agent = get_agent(algorithm, train_env, demo_path, should_show_demo, hyperparams, filename)
+    
+     
+    ###############################################################################
+    ############# Evaluate using training reward - faster ##########################
+    ###############################################################################
+    
+    # save_best_callback = SaveOnBestTrainingRewardCallback(
+    #     check_freq=1000, # Save the model every 1000 steps
+    #     log_dir=filename, # Directory where to save the best model
+    #     verbose=1
+    # )
+    
+    
+    # agent.learn(timesteps, log_interval=10, progress_bar=True, callback=save_best_callback)
+    
+    
+    # plot_results([filename], timesteps, results_plotter.X_TIMESTEPS, "TD3 LunarLander")
+    # plt.show()
+    
+    ###############################################################################
+    ###############################################################################
+    
+    
+    
+    ###############################################################################
+    ###############################################################################
+    ############ Evaluate in eval episodes - slower but more consistent ###########
+    ###############################################################################
+    ###############################################################################
+    
+    
+    ## Could be better if we can create a seperate eval env - technical error - modelling
+    # callback_on_best = StopTrainingOnRewardThreshold(reward_threshold=900,verbose=1)
+    eval_callback = CustomEvalCallback(train_env,
+                                 verbose=1,
+                                #  callback_on_new_best=callback_on_best,
+                                 best_model_save_path=filename+'/',
+                                 log_path=filename+'/',
+                                 eval_freq=int(1500),
+                                 deterministic=True,
+                                 render=False,
+                                 render_train = False,
+                                 plot_rewards=False)
+    
+    agent.learn(timesteps, log_interval=10, progress_bar=True, callback=[eval_callback, TensorboardCallback()], tb_log_name= algorithm + "_training_" + str(timesteps))
+    
+    # agent.learn(timesteps, log_interval=10, progress_bar=True)
     print_green("TRAINING COMPLETE!")
 
-    if save_data:
-        agent.save(f"../models/{dir_name}/model")
-        if save_replay_buffer:
-            agent.save_replay_buffer(f"../models/{dir_name}/replay_buffer")
-        print_green("Model Saved")
+    # train_env.reset()
+    train_env.close()
     
-    env.close()
+    # eval_env.close()
     
-    test_env = HoveringWrapper(PositionWrapper(SymmetricWrapper(BulletDroneEnv(render_mode=render_mode, phase=phase, client = False))))
+    #### Save the model ########################################
+    agent.save(filename+'/final_model.zip')
+    print(f"model is saved to: {filename}")
+
+    #### Print Evaluation progression ############################
+    with np.load(filename + '/evaluations.npz') as data:
+        timesteps = data['timesteps']
+        results = data['results']  # Assuming this is an array of episode rewards per evaluation
+        
+        print(f"{'Timestep':<10} {'Mean Reward':<15} {'Std Dev (if any)':<15}")
+        print("-" * 40)
+        
+        for j in range(timesteps.shape[0]):
+            mean_reward = np.mean(results[j])
+            std_reward = np.std(results[j]) if len(results[j]) > 1 else "N/A"  # Check if there's more than one episode
+            print(f"{timesteps[j]:<10} {mean_reward:<15.2f} {std_reward:<15}")
+
+
+    # ##########################################################################
+    ###################### Load the trained model ############################
+    ##########################################################################
+
+    print_green("Press Enter to continue Testing...")
+    input()
+    # #########save the best model after evaluation
+    if os.path.isfile(filename+'/best_model.zip'):
+        path = filename+'/best_model.zip'
+    else:
+        print("[ERROR]: no model under the specified path", filename)
+        if os.path.isfile(filename+'/final_model.zip'):
+            path = filename+'/final_model.zip'
     
-    test_env_nogui = HoveringWrapper(PositionWrapper(SymmetricWrapper(BulletDroneEnv(render_mode=render_mode, phase=phase, client = True))))
+
+    if algorithm == 'SACfD':
+        model = SACfD.load(path)
+    elif algorithm == 'SAC':
+        model = SAC.load(path)
+    else:
+        print("[ERROR]: no model under the current algotithm", algorithm)
+        
+    ##########################################################################
+    ###################### Show the model's performance ######################
+    ##########################################################################
     
-    mean_reward, std_reward = evaluate_policy(agent,
+    print_green("Evaluating the Performance of the Trained Model...")
+    test_env_nogui = Monitor(HoveringWrapper(PositionWrapper(SymmetricWrapper(BulletDroneEnv( gui=True)))))
+    mean_reward, std_reward = evaluate_policy(model,
                                               test_env_nogui,
-                                              n_eval_episodes=10
+                                              n_eval_episodes=5
                                               )
     print("\n\n\nMean reward ", mean_reward, " +- ", std_reward, "\n\n")
-
+    test_env_nogui.close()
     
-    
-      # Testing
-    # test_env = get_env(dir_name, render_mode, phase)  # Create a new testing environment
-    test_agent(agent, test_env)
-    
-    
-    
-
-    if save_data:
-        generate_graphs(directory=f"../models/{dir_name}", phase=phase)
+    print_green("Testing the Performance of the Trained Model...")
+    test_env = HoveringWrapper(PositionWrapper(SymmetricWrapper(BulletDroneEnv(gui=True))))
+    test_agent(model, test_env)
 
 
 def parse_arguments():
@@ -373,13 +399,6 @@ def parse_arguments():
     parser.add_argument('-algo', '--algorithm', type=str, choices=['SAC', 'SACfD'], required=True,
                         help='Choice of algorithm: SAC or SACfD')
 
-    # Output filename for logs
-    parser.add_argument('-o', '--output-filename', type=str, default=None, help='Filename for storing logs')
-    parser.add_argument('--save-replay-buffer', action='store_true', help='Saves the replay model from the buffer.')
-
-    # Graphical user interface
-    parser.add_argument('-gui', '--gui', action='store_true', help='Enable graphical user interface')
-
     # Demonstration path
     parser.add_argument('--demo-path', type=str, default=DEMO_PATH,
                         help=f"Path to demonstration files (default: {DEMO_PATH}")
@@ -387,21 +406,8 @@ def parse_arguments():
     # Show demonstrations in visual environment
     parser.add_argument('--show-demo', action='store_true', help='Show demonstrations in visual environment')
 
-    # Checkpoint episodes
-    parser.add_argument('--checkpoint-episodes', type=int, default=DEFAULT_CHECKPOINT,
-                        help='Frequency of checkpoint episodes (default: 5000)')
-    parser.add_argument('--no-checkpoint', action='store_true', help='Perform NO checkpointing during training.')
-
     parser.add_argument("-params", "--hyperparams", type=str, nargs="+", action=StoreDict,
                         help="Overwrite hyperparameter (e.g. lr:0.01 batch_size:10)",)
-
-    # Continue Training
-    parser.add_argument("-i", "--trained-agent", help="Path to a pretrained agent to continue training",
-                        default=None, type=str, required=False)
-
-    # Train particular phase
-    parser.add_argument("-p", "--phase", type=str, choices=["approaching", "all"], default="all",
-                        help="Train a particular phase of a the system.")
 
     return parser.parse_args()
 
@@ -410,34 +416,17 @@ if __name__ == "__main__":
     args = parse_arguments()
     algorithm = args.algorithm
     timesteps = args.timesteps
-    filename = args.output_filename
-    render_mode = "human" if args.gui else "console"
     demo_path = args.demo_path
     should_show_demo = args.show_demo
-    checkpoint = args.checkpoint_episodes
-    if args.no_checkpoint:
-        checkpoint = None
-    trained_agent = args.trained_agent
-    save_replay_buffer = args.save_replay_buffer
-    phase = args.phase
 
     if algorithm != "SACfD" and demo_path is not None:
         print_red("WARNING: Demo path provided will NOT be used by this algorithm!")
 
     print_green(f"Algorithm: {algorithm}")
     print_green(f"Timesteps: {timesteps}")
-    print_green(f"Render Mode: {render_mode}")
-    if filename is None:
-        print_red("WARNING: No output or logs will be generated, the model will not be saved!")
-    else:
-        print_green(f"File Name: {filename}")
 
     if algorithm == "SACfD":
         print_green(f"Demo Path: {demo_path}")
-    print_green(f"Checkpointing: {checkpoint}")
-
-    if trained_agent is not None:
-        print_green(f"Using pre-trained agent: {trained_agent}")
 
     accpetable_hp = ["lr", "batch_size"]
     hyperparams = args.hyperparams if args.hyperparams is not None else dict()
@@ -447,5 +436,4 @@ if __name__ == "__main__":
         else:
             print_red(f"\nUnknown Hyperparameter: {key}")
 
-    main(algorithm, timesteps, filename, render_mode, demo_path, should_show_demo, checkpoint, hyperparams,
-         trained_agent, save_replay_buffer, phase)
+    main(algorithm, timesteps, demo_path, should_show_demo , hyperparams)

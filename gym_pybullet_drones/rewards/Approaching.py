@@ -1,33 +1,87 @@
+import matplotlib.pyplot as plt
 import math
 from typing import Tuple
 import numpy as np
-
-
-def interpolate_distance(distance, max_value, max_reward, min_value=0, min_reward=0):
-    return min_reward + ((max_reward - min_reward) * (distance - min_value)) / (max_value - min_value)
-
+def interpolate_distance(distance, max_dist_value, max_penalty, min_dist_value=0.2, min_penalty=0):
+    penalty = min_penalty + ((max_penalty - min_penalty) / (max_dist_value - min_dist_value)) * (distance - min_dist_value)
+    return penalty
 
 class CircularApproachingReward():
-    down_centre_x, down_centre_y, down_centre_z, down_start, down_end = 0,0, 2.7, 225, 315
-    up_centre_x, up_centre_y,up_centre_z, up_start, up_end = 0, 0, 4.5, 45, 135
-    radius = 3
-    reward_penalty = 5
-    has_already_collided = False
+    def __init__(self, branch_pos, tether_length) -> None:
 
-    def reward_fun(self, state, has_collided, dist_tether_branch, dist_drone_branch,
-                   num_wraps) -> Tuple[float, bool, bool]:
+        self.down_centre_x, self.down_centre_y, self.down_centre_z, self.down_start, self.down_end = 0,0, 2.7, 170, 10
+        self.down_centre_x
+        self.up_centre_x, self.up_centre_y, self.up_centre_z, self.up_start, self.up_end = 0,0, 4.5, 0, 180
+        self.radius = 3
+        self.reward_penalty = 1
 
-        reward = min(self._calculate_sector_reward(state),
-                     self._calc_physical_reward(dist_tether_branch, dist_drone_branch)) + (
-                         1.0 if has_collided else 0.0)
-        
-        reward = self.clip_norm(reward, -3.5, 1.0)
-        return reward - 1, False, False
 
-    def clip_norm(self, reward, min_val, max_val):
-        clipped_val = min(max_val, max(reward, min_val))
-        normalized_val = (clipped_val - min_val) / (max_val - min_val)
-        return normalized_val
+        self.branch_pos = branch_pos
+        self.tether_length = tether_length
+
+
+        contact_tether_length = (2 / 3 ) * tether_length
+
+        self.target = np.array([
+            branch_pos[0] - contact_tether_length * np.cos(np.radians(45)),
+            branch_pos[1],
+            branch_pos[2] + contact_tether_length * np.sin(np.radians(45))])
+
+
+        self.collision_threshold = self.tether_length/10  # Threshold to decide whether a collision occurs
+        self.contact_timesteps = 0  # To track sustained tether contact
+        self.sustained_contact_reward = 0  # Accumulated reward for sustained contact
+
+    def reward_fun(self, state, has_any_tether_contacted, dist_tether_branch, dist_drone_branch, num_wraps, weight_pos) -> Tuple[float, bool, bool]:
+
+
+
+        # print(self.target)
+        distance = np.linalg.norm(state - self.target)
+        reward = 1 * (1 - (distance / 2))  # Normalize
+        # distance = np.clip(distance, -1,0)
+        distance_reward = np.tanh(reward)
+
+        # 2. Calculate the collision avoidance penalty (penalize drone for being too close to the branch)
+        collision_penalty = self.drone_collision_avoidance_reward(dist_drone_branch)
+
+        # 3. Combine penalties by summing them (they are now both penalties, not rewards)
+        total_penalty = distance_reward + collision_penalty
+
+        # 4. Calculate the tether contact reward
+        tether_contact_reward = self._calc_tether_branch_reward(dist_tether_branch)
+
+        # 5. Update sustained tether contact reward
+        self._update_sustained_contact_reward(has_any_tether_contacted)
+
+        # 6. Final reward is the combined penalty, tether contact reward, and sustained contact reward
+        final_reward = total_penalty + tether_contact_reward + self.sustained_contact_reward + self._calculate_sector_reward(state)
+
+        if distance < 0.05:
+            ring_reward = 1.0  # Layer 5: closest to the target
+        elif distance < 0.1:
+            ring_reward = 0.75  # Layer 4
+        elif distance < 0.25:
+            ring_reward = 0.5  # Layer 3
+        elif distance < 0.5:
+            ring_reward = 0.25  # Layer 2
+        elif distance < 1.0:
+            ring_reward = 0.1  # Layer 1
+        else:
+            ring_reward = 0.0  
+
+        final_reward += ring_reward
+
+
+
+
+        # 7. Ensure the total reward is clipped between -5 and 2
+        final_reward = np.tanh(final_reward)
+
+        return final_reward
+
+
+
 
     def _calculate_sector_reward(self, state):
         x, y, z = state
@@ -54,18 +108,6 @@ class CircularApproachingReward():
 
         # # Calculate the angle from the center to the point in radians
         angle_radians = math.atan2(point_z - center_z, point_x - center_x)
-
-
-    
-        # # Calculate the angle in 3D space using the vector from the center to the point
-        # vector = np.array([point_x - center_x, point_y - center_y, point_z - center_z])
-        # reference_vector = np.array([center_x, center_y, center_z]) 
-
-        # # Calculate the angle between the vector and the reference vector
-        # cos_angle = np.dot(vector, reference_vector) / (np.linalg.norm(vector) * np.linalg.norm(reference_vector))
-        # angle_radians = math.acos(cos_angle)
-        
-        
         
         # Convert angle to degrees for easier handling, normalizing to [0, 360)
         angle_degrees = math.degrees(angle_radians) % 360
@@ -80,21 +122,36 @@ class CircularApproachingReward():
 
         return within, 1 - (distance / radius)
 
-    def _calc_physical_reward(self, dist_tether_branch, dist_drone_branch):
-        reward = - dist_tether_branch + self._calc_drone_branch_reward(dist_drone_branch)
-        return reward
 
-    def _calc_drone_branch_reward(self, dist_drone_branch: np.ndarray) -> float:
-        """
-        Calculate reward for drone hitting the branch: Ring based
-        - Inner: -10, Outer: 0, Between: 0:-5
-        """
-        if dist_drone_branch < 0.1:  # A collision
-            return -5.0
-        elif dist_drone_branch < 0.2:  # Quite close
-            return interpolate_distance(dist_drone_branch, 0.1, -5, min_value=0.2)
+    def _update_sustained_contact_reward(self, has_any_tether_contacted):
+    
+        if has_any_tether_contacted:
+            self.contact_timesteps += 1
+            # Incrementally increase the sustained contact reward
+            self.sustained_contact_reward = min(1.0, self.sustained_contact_reward + 0.1 * self.contact_timesteps)
+        else:
+            # Reset sustained contact when tether loses contact
+            self.contact_timesteps = 0
+            self.sustained_contact_reward = 0
+
+    def drone_collision_avoidance_reward(self, dist_drone_branch):
+   
+        return self._calc_drone_branch_penalty(dist_drone_branch)
+
+    def _calc_drone_branch_penalty(self, dist_drone_branch: np.ndarray) -> float:
+      
+        if dist_drone_branch < self.collision_threshold:  # Collision
+            return -1.0
+        elif dist_drone_branch < self.collision_threshold * 5:  # Near-collision, interpolate penalty
+            return interpolate_distance(distance=dist_drone_branch, max_dist_value=self.collision_threshold, max_penalty=-1, min_dist_value=self.collision_threshold * 5, min_penalty=0)
         else:
             return 0
 
-    def end(self):
-        pass
+    def _calc_tether_branch_reward(self, dist_tether_branch: np.ndarray) -> float:
+       
+        if dist_tether_branch < self.collision_threshold / 5:  # Close to the center
+            return 1
+        elif dist_tether_branch < self.collision_threshold * 2:  # Quite close to the branch
+            return interpolate_distance(distance=dist_tether_branch, max_dist_value=self.collision_threshold, max_penalty=1, min_dist_value=self.collision_threshold * 2, min_penalty=0)
+        else:
+            return 0

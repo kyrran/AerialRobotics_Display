@@ -17,11 +17,11 @@ class BulletDroneEnv(TetherModelSimulationEnvPID):
 
     # metadata = {"render_modes": ["console", "human"]}
     reset_pos = [2, 0, 3]
-    centre_pos = np.array([0.0, 0.0, 3.0])  # Goal state
+    centre_pos = np.array([0.0, 0.0, 2.7])  # Goal state
     reset_pos_distance = 2.0
 
-    def __init__(self, render_mode: str = "human", phase: str = "all", log_dir=None, branch_pos=[0,0,2.7], client = True) -> None:
-        super().__init__(start_pos=self._generate_reset_position(42), branch_init_pos=branch_pos, client=client)
+    def __init__(self, render_mode: str = "human", phase: str = "all", log_dir=None, branch_pos=[0,0,2.7], tether_length = 1.0, client = None, gui = True) -> None:
+        super().__init__(start_pos=self._generate_reset_position(42), branch_init_pos=branch_pos, gui = gui)
         # You can keep or modify the action and observation spaces depending on your specific needs
         # self.observation_space = spaces.Box(low=-np.inf, high=np.inf, shape=(5,), dtype=np.float32)
         self.action_space = self._actionSpace()
@@ -32,7 +32,7 @@ class BulletDroneEnv(TetherModelSimulationEnvPID):
         self.render_mode = render_mode
         self.num_steps = 0
         self.should_render = True
-        self.reward = RewardSystem(phase)
+        self.reward = self.reward_system
         self.is_logging = bool(log_dir is not None)
         if self.is_logging:
             self.log_dir = log_dir
@@ -40,6 +40,8 @@ class BulletDroneEnv(TetherModelSimulationEnvPID):
             self.csv_file = None
             self.timestep = 0
             self.df = None
+            
+        
 
     def reset(self, seed: int=None, options: Dict[str, Any] = None,
               degrees: int = None, position=None, branch_pos=None) -> Tuple[np.ndarray, Dict[Any, Any]]:
@@ -96,8 +98,12 @@ class BulletDroneEnv(TetherModelSimulationEnvPID):
     def _generate_reset_position(self, seed):
         if seed is not None:
             np.random.seed(seed)
-        angle = np.random.uniform(0, np.pi / 3)
-
+        angle = np.random.uniform(0, np.pi/3)
+        
+        # while True:
+        #     angle = np.random.uniform(0, np.pi)
+        #     if not (45 <= angle <= 135):  # Exclude 60-120 degrees
+        #         break
         return self._generate_reset_position_from_radians(angle)
 
     def _generate_reset_position_from_degrees(self, degrees):
@@ -109,7 +115,7 @@ class BulletDroneEnv(TetherModelSimulationEnvPID):
 
         reset_pos = self.centre_pos + np.array([x_offset, 0, y_offset], dtype=np.float32)
         return reset_pos.astype(np.float32)
-
+    
     def log_state(self, pos, orn_euler, phase):
         # Log state to DataFrame
         self.df = self.df._append({
@@ -125,10 +131,16 @@ class BulletDroneEnv(TetherModelSimulationEnvPID):
         
     def calc_reward_and_done(self, state, num_wraps=0.0):
         branch_pos = np.array([0.0, 0.0, 2.7])  # Branch position
-        tether_pos = state - np.array([0, 0, 0.5])
+        tether_pos = state - np.array([0, 0, 0.67])
+        #mid point contact or not - for demo reward generation only
+        
         dist_tether_branch = np.linalg.norm(tether_pos - branch_pos)
+        
         dist_drone_branch = np.linalg.norm(state - branch_pos)
-        has_collided = bool(dist_tether_branch < 0.1)
+        # has_collided = bool(dist_tether_branch < 0.1)
+        
+        
+        has_collided, _ = self.check_tether_contact(state, branch_pos, 1.0)
 
         reward = self.reward.calculate(state, has_collided, dist_tether_branch, dist_drone_branch,
                                              num_wraps=num_wraps)
@@ -136,17 +148,45 @@ class BulletDroneEnv(TetherModelSimulationEnvPID):
         return reward, done
     
     
-    def calc_reward(self, state, num_wraps=0.0):
-        branch_pos = np.array([0.0, 0.0, 2.7])  # Branch position
-        tether_pos = state - np.array([0, 0, 0.5])
-        dist_tether_branch = np.linalg.norm(tether_pos - branch_pos)
-        dist_drone_branch = np.linalg.norm(state - branch_pos)
-        has_collided = bool(dist_tether_branch < 0.1)
+    def check_tether_contact(self, drone_pos, branch_pos, tether_length):
+        """
+        Check if any part of the tether has contacted the branch.
 
-        reward = self.reward.calculate(state, has_collided, dist_tether_branch, dist_drone_branch,
-                                             num_wraps=num_wraps)
+        Args:
+            drone_pos (np.ndarray): The 3D position of the drone [x, y, z].
+            branch_pos (np.ndarray): The 3D position of the branch [x, y, z].
+            tether_length (float): The length of the tether.
+
+        Returns:
+            Tuple[bool, float]: A boolean indicating if there was contact and the distance to the branch.
+        """
+        tether_end_pos = drone_pos - np.array([0, 0, tether_length])  # Tether assumed to end directly below the drone
+        num_points_to_check = 20  # Increase or decrease based on precision
+        contact_threshold = 0.1 / 5
+
+        # Linearly interpolate points along the tether
+        for t in np.linspace(0, 1, num_points_to_check):
+            point_on_tether = drone_pos + (1 - t) * tether_end_pos  # Interpolating along the tether
+            dist_to_branch = np.linalg.norm(point_on_tether - branch_pos)
+            if dist_to_branch < contact_threshold:
+                return True, dist_to_branch
+
+        return False, np.inf
+    
+    # def calc_reward(self, state, num_wraps=0.0):
+    #     branch_pos = np.array([0.0, 0.0, 2.7])  # Branch position
+    #     tether_pos = state - np.array([0, 0, 0.33])
+    #     dist_tether_branch = np.linalg.norm(tether_pos - branch_pos)
+    #     dist_drone_branch = np.linalg.norm(state - branch_pos)
+    #     has_collided = bool(dist_tether_branch < 0.1)
+
+    #     reward = self.reward.calculate(state, has_collided, dist_tether_branch, dist_drone_branch,
+    #                                          num_wraps=num_wraps)
         
-        return reward
+    #     return reward
+    
+    def render(self):
+        super().render()
         
     
     

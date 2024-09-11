@@ -2,7 +2,7 @@ import pandas as pd
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from utils.graphics.plot_rl_rewards_training import plot_rl_comparison
+from gym_pybullet_drones.utils.graphics.plot_rl_rewards_training import plot_rl_comparison
 
 
 def read_csv_file(filename_1, filename_2, num_episodes=None, show=True):

@@ -9,6 +9,7 @@ import toppra.constraint as constraint
 import toppra.algorithm as algo
 
 EXPR_BRANCH_POSITION_demo = [-0.705489013671875, 0.0519111213684082, 1.5764576416015625]
+# EXPR_BRANCH_POSITION_demo = [-1.60869689941406,	-0.00543527841567993,	1.79931481933594]
 
 NUM_DRONES = 1
 
@@ -33,7 +34,7 @@ def reduce_waypoints(waypoints, epsilon=0.05):
     return np.array(simplified_waypoints)
 
 def smooth_waypoints(simplified_waypoints, filename):
-    smoothed_waypoints = toppra_waypoints(simplified_waypoints, min(len(simplified_waypoints)*50,300),filename)
+    smoothed_waypoints = toppra_waypoints(simplified_waypoints, min(len(simplified_waypoints)*10,300),filename)
     smoothed_waypoints = smoothed_waypoints[['drone_x', 'drone_y', 'drone_z']].values
     print(f"waypoints no:{len(smoothed_waypoints)}")
     return simplified_waypoints
@@ -85,41 +86,16 @@ def toppra_waypoints(simplified_waypoints, num_samples, filename):
     
     return processed_waypoints
 
-
-# def add_hover_waypoints(file_path, hover_position, trajectory_points, control_freq_hz=48, period=5):
-#     """Add hover waypoints to the trajecthovenvory."""
-#     num_wp = control_freq_hz * period
-#     ascent_duration = int(num_wp / 4)
-#     target_pos = np.zeros((num_wp + len(trajectory_points), 3))
-    
-#     for i in range(num_wp):
-#         if i < 12:
-#             target_pos[i, :] = [hover_position[0], hover_position[1], (hover_position[2] / ascent_duration) * i]
-#         else:
-#             target_pos[i, :] = hover_position
-    
-#     target_pos[num_wp:num_wp + len(trajectory_points), :] = trajectory_points
-    
-#     target_pos = trajectory_points
-#     # Save the reduced waypoints to a new CSV file
-#     reduced_waypoints = pd.DataFrame(target_pos, columns=['drone_x', 'drone_y', 'drone_z'])
-#     os.makedirs("optimised", exist_ok=True)
-#     reduced_waypoints_file = "./optimised/reduced_" + file_path
-#     reduced_waypoints.to_csv(reduced_waypoints_file, index=False)
-    
-#     return target_pos, reduced_waypoints_file
-
-
-# Example usage
-# csv_file = ["rosbag2_2024_05_22-17_00_56.csv", "rosbag2_2024_05_22-17_03_00.csv",
-#             "rosbag2_2024_05_22-17_20_43.csv", "rosbag2_2024_05_22-17_26_15.csv", 
-#             "rosbag2_2024_05_22-18_10_51.csv", "rosbag2_2024_05_22-18_16_45.csv"]
-
 csv_file = ["rosbag2_2024_05_22-17_00_56_filtered_normalized.csv", "rosbag2_2024_05_22-17_03_00_filtered_normalized.csv",
             "rosbag2_2024_05_22-17_20_43_filtered_normalized.csv", "rosbag2_2024_05_22-17_26_15_filtered_normalized.csv", 
             "rosbag2_2024_05_22-18_10_51_filtered_normalized.csv", "rosbag2_2024_05_22-18_16_45_filtered_normalized.csv"]
 
+# csv_file = ["rosbag2_2024_06_14-11_09_26_traj_1_xyz_only.csv", "rosbag2_2024_06_14-11_13_17_traj_1_xyz_only.csv",
+#             "rosbag2_2024_06_14-11_17_04_traj_1_xyz_only.csv", "rosbag2_2024_06_14-11_19_54_traj_1_xyz_only.csv", 
+#             "rosbag2_2024_06_14-11_24_45_traj_1_xyz_only.csv", "rosbag2_2024_06_14-11_29_38_traj_1_xyz_only.csv",
+#             "rosbag2_2024_06_14-12_10_39_traj_1_xyz_only.csv", "rosbag2_2024_06_14-12_14_43_traj_1_xyz_only.csv"]
 
+    
 for i in range(len(csv_file)):
     print(f"------processing {csv_file[i]}------")
     waypoints = pre_process_waypoints(csv_file[i])

@@ -11,7 +11,7 @@ class Weight:
     
     
     
-    MASS: float = 0.00005
+    MASS: float = 0.000001
     RADIUS: float = 0.03
 
     _body_centre_top = np.array([0, 0, RADIUS], dtype=np.float32)
@@ -46,3 +46,6 @@ class Weight:
 
     def get_body_centre_top(self) -> np.ndarray:
         return self._body_centre_top
+    
+    def get_weight_id(self):
+        return self.weight_id

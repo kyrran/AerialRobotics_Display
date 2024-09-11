@@ -1,90 +1,157 @@
+import numpy as np
+import matplotlib.pyplot as plt
 from gym_pybullet_drones.rewards.Approaching import CircularApproachingReward
 from gym_pybullet_drones.rewards.Hanging import Hanging
-import matplotlib.pyplot as plt
+
+
+def tanh_wrap_reward(num_wraps, k=2, max_reward=1):
+    """
+    Smoothly returns a reward between 0 and max_reward based on the number of wraps (num_wraps).
+    """
+    return (max_reward / 2) * (1 + np.tanh(k * (num_wraps - 1)))
+
+
+def continuous_distance_penalty(dist_drone_branch, max_dist=0.1, max_penalty=-0.5):
+    """
+    Provides a smooth distance-based penalty. The closer the drone is to the branch, the smaller the penalty.
+    """
+    penalty = np.clip(dist_drone_branch / max_dist, 0, 1) * max_penalty
+    return penalty
 
 
 class RewardSystem():
-    def __init__(self, phase: str) -> None:
-        self.phase = phase
-        print("Phase: ", phase)
-        self.approaching_reward = CircularApproachingReward()
-        self.hanging_reward = Hanging()
+    def __init__(self, branch_pos, tether_length) -> None:
+        self.approaching_reward = CircularApproachingReward(branch_pos, tether_length)
+        self.hanging_reward = Hanging(branch_pos, tether_length)
 
+        # Initialize tracking lists for plotting
         self.approaching_rewards = []
         self.wrapping_rewards = []
         self.hanging_rewards = []
         self.distance_rewards = []
         self.total_rewards = []
-        
-        
+        self.num_wraps_list = []
+
+        # Other relevant settings
         self.self_done_states = False
+        
+        self.branch_pos = branch_pos
+        self.tether_length = tether_length
+        self.previous_num_rotations = 0
 
-    def calculate(self, state, has_collided, dist_tether_branch, dist_drone_branch,
-                  num_wraps):
+    def calculate(self, state, has_contacted, dist_tether_branch, dist_drone_branch, num_wraps, weight_pos):
+        """
+        Calculate the total reward based on the drone's progress in wrapping, hanging, and avoiding collisions.
 
-        # Approaching reward is between -1 and 0
-        approaching_reward, _, _ = self.approaching_reward.reward_fun(state, has_collided, dist_tether_branch,
-                                                                      dist_drone_branch, num_wraps)
-        approaching_reward = approaching_reward if num_wraps < 0.9 else 0.0
-        assert approaching_reward <= 0 and approaching_reward >= -1, f"was {approaching_reward}"
+        Args:
+            state: The drone's current position.
+            has_contacted: Whether the tether has contacted the branch.
+            dist_tether_branch: Distance between the tether and the branch.
+            dist_drone_branch: Distance between the drone and the branch.
+            num_wraps: The number of wraps around the branch.
 
-        # Wrapping reward is between -1 and 0
-        wrapping_reward = 1.0 * min(num_wraps, 1.0) - 1.0
-        assert wrapping_reward <= 0 and wrapping_reward >= -1, f"was {wrapping_reward}"
+        Returns:
+            total_reward: The combined reward based on progress.
+        """
+        ### 1. Approaching reward - focuses on getting close to the branch
+        approaching_reward = self.approaching_reward.reward_fun(state, has_contacted, dist_tether_branch, dist_drone_branch, num_wraps,weight_pos)
+        assert -5 <= approaching_reward <= 2, f"Invalid approaching_reward: {approaching_reward}"
 
-        # Hanging reward is between 0 and 1
-        hanging_reward, hanging_done, _ = self.hanging_reward.reward_fun(state, has_collided, dist_tether_branch,
-                                                                         dist_drone_branch, num_wraps)
-        hanging_reward = hanging_reward - 1  # Now its between -1 and 0
-        assert hanging_reward <= 0 and hanging_reward >= -1, f"was {hanging_reward}"
+        
+        # if has_contacted:
+        #     # Reward for increasing the number of wraps (positive wrapping)
+        #     if num_wraps >= abs(self.previous_num_rotations):
+        #         wrapping_reward = np.clip(num_wraps, 0, None)  # Only positive or steady wraps count
+        #         wrapping_reward += 0.1 * num_wraps  # Extra incentive for sustained wrapping
+        #     else:
+        #         # Penalize if the net number of wraps decreases significantly (indicating unwrapping)
+        #         wrapping_reward = -0.5 * abs(self.previous_num_rotations - num_wraps)  # Penalty for reversing
+        # else:
+        #     wrapping_reward = 0  
 
-        distance_reward = min(0.5, max(0, dist_drone_branch if num_wraps > 1.0 else 0.0)) - 0.5
-        assert distance_reward <= 0 and distance_reward >= -0.5, f"was {distance_reward}"
+        ### 2. Wrapping reward - smoothly increases with number of wraps
+        wrapping_reward = tanh_wrap_reward(num_wraps, k=2, max_reward=1) 
+        assert 0 <= wrapping_reward <= 1, f"Invalid wrapping_reward: {wrapping_reward}"
 
+        ### 3. Hanging reward - increases when drone hangs successfully
+        hanging_reward, hanging_done = self.hanging_reward.reward_fun(state)
+
+        assert -1 <= hanging_reward <= 1, f"Invalid hanging_reward: {hanging_reward}"
+
+        ### 4. Distance penalty - softly penalizes the drone for being too close to the branch
+        distance_reward = continuous_distance_penalty(dist_drone_branch)
+        assert -0.5 <= distance_reward <= 0, f"Invalid distance_reward: {distance_reward}"
+
+        if num_wraps > 0:
+            print(f"num:{num_wraps}")
+        
         total_reward = 0
-        match self.phase:
-            case "all":
-                if num_wraps > 0.75:
-                    total_reward = 0 + wrapping_reward + hanging_reward + distance_reward  # Between -2 and 0
-                    done = hanging_done
-                    if done:
-                        print(f"case1:{done}")
-                else:
-                    total_reward = approaching_reward + wrapping_reward - 1.5  # Between -3 and -1
-                    done = False
-
-            case "approaching":
-                total_reward = approaching_reward + wrapping_reward - 1.5  # Between -3 and -1
-                done = bool(num_wraps > 0.9)
-                print(f"case2:{done}")
-            case _:
-                raise ValueError("Unknown phase type")
-
-        self.approaching_rewards.append(approaching_reward)
-        self.wrapping_rewards.append(wrapping_reward)
-        self.hanging_rewards.append(hanging_reward)
-        self.distance_rewards.append(distance_reward)
-        self.total_rewards.append(total_reward)
         
-        self.self_done_states = done
-        return total_reward
+        if num_wraps > 0.5:
+            # 1 + (0~2) = 1~3
+            # print("++++++++++++wrapping+++++++-")  
+            total_reward = 2 + 2*wrapping_reward + distance_reward #-1,1+ 1,2, -1,1 = 1,3
     
-    
-    def refer_terminated(self):
-        return self.self_done_states
-    
-    def reset(self):
-        self.self_done_states = False
-        # plt.figure(figsize=(14, 7))
-        # plt.plot(self.approaching_rewards, label='Approaching Reward', marker='o', alpha=0.2)
-        # plt.plot(self.wrapping_rewards, label='Wrapping Reward', marker='o', alpha=0.2)
-        # plt.plot(self.hanging_rewards, label='Hanging Reward', marker='o', alpha=0.2)
-        # plt.plot(self.distance_rewards, label='Distance Reward', marker='o', alpha=0.2)
-        # plt.plot(self.total_rewards, label='Total Reward', marker='o', linestyle='--', alpha=0.2)
+            if num_wraps > 1.0:
+                print("##############################")
+                print("########hanging#############")
+                # (-1,1) + 1~3 = 0,2 ~ 2,4 => 0,4
+                total_reward += hanging_reward
+                done = hanging_done
+            else:
+                done = False
+                
+                
+            print(done)
+        else:
+            # print("----------approaching--------------------")
+            total_reward = 2*approaching_reward + wrapping_reward # -1,1 + 0,0.5 -1,1.5
+            done = False
+        
+        
+        
+        self.previous_num_rotations = num_wraps
+        # total_reward = approaching_reward + wrapping_reward
+        # total_reward = np.clip(total_reward, -1, 1)  # Normalize rewards
+        
+        # print(total_reward)
+        
+        
+        ### Track and save reward components for analysis
+        self.approaching_rewards.append(approaching_reward)
+        # self.wrapping_rewards.append(wrapping_reward)
+        # self.hanging_rewards.append(hanging_reward)
+        self.distance_rewards.append(distance_reward)
+        self.num_wraps_list.append(num_wraps)
+        self.total_rewards.append(total_reward)
 
+        # self.self_done_states = done
+        return total_reward
+
+    def refer_terminated(self):
+        """Return the done state for termination checks."""
+        return self.self_done_states
+
+    def reset(self):
+        """Reset reward tracking and plot the results."""
+        self.self_done_states = False
+
+        # plt.figure(figsize=(14, 7))
+        # plt.plot(self.total_rewards, label='Total Reward', marker='o', linestyle='--', alpha=0.2)
+        # # plt.plot(self.num_wraps_list, label='No. Wraps', marker='o', linestyle='--', alpha=0.2)
+        # plt.plot(self.approaching_rewards, label='approaching', marker='o', linestyle='--', alpha=0.2)
         # plt.xlabel('Time Steps')
         # plt.ylabel('Reward Value')
         # plt.title('Reward Components Over Time')
         # plt.legend()
         # plt.grid(True)
         # plt.show()
+
+        # Clear reward logs
+        self.approaching_rewards = []
+        self.wrapping_rewards = []
+        self.hanging_rewards = []
+        self.distance_rewards = []
+        self.total_rewards = []
+        self.num_wraps_list = []
+

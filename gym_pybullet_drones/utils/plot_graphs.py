@@ -128,7 +128,7 @@ def plot_reward_visualisation(directory, show=True, plot_type=0.0):
 
 
 def read_csv_file(filename, num_episodes=None, smoothing=10, show=True):
-    from utils.graphics.plot_rl_rewards_training import plot_rl_reward_graph
+    from gym_pybullet_drones.utils.graphics.plot_rl_rewards_training import plot_rl_reward_graph
     try:
         # Load the CSV file into a DataFrame
         data = pd.read_csv(filename, comment='#', header=0)

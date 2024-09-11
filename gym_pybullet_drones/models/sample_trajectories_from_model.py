@@ -35,16 +35,14 @@ class SampleTrajEnv(gym.Wrapper):
 
 
 def sample_trajectories(dir, show=True, human=False, phase="all"):
-    file_name = f"{dir}/model.zip"
+    file_name = f"{dir}/best_model.zip"
     output_filename = f"{dir}/sample_trajectories.png"
     sample_trajectories_from_file(file_name, output_filename, show, human, phase=phase, log_dir=dir)
 
 
 def sample_trajectories_from_file(file, output_filename, show=True, human=False, phase="all", log_dir=None):
-    # plotting_degrees = [0, 11.25, 22.5, 33.75, 45]
-    plotting_degrees = [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 
-                        195, 210, 225, 240, 255, 270, 285, 300, 315, 330, 345, 360
-                        ]
+    plotting_degrees = [0, 11.25, 22.5, 33.75, 45]
+    # plotting_degrees = [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225, 240, 255, 270, 285, 300, 315, 330, 345, 360]
 
 
     model = SAC.load(file)
@@ -56,9 +54,11 @@ def sample_trajectories_from_file(file, output_filename, show=True, human=False,
     num_trajectories = len(plotting_degrees)
     if human:
         print("Num Trajectories: ", num_trajectories)
-    trajectory_length = 200
+    trajectory_length = 300
     trajectory_states = []
     hanging_states = []
+    
+    
     done = False
 
     for _ in range(num_trajectories):
@@ -76,9 +76,9 @@ def sample_trajectories_from_file(file, output_filename, show=True, human=False,
         for i in range(trajectory_length):
             action, _ = model.predict(np.array(obs), deterministic=True)
             obs, reward, done, truncated, info = env.step(action)
-            print(info)
-            env.render()
-            sync(i, start, env.CTRL_TIMESTEP)
+            # print(info)
+            # env.render()
+            sync(i, start, env.get_wrapper_attr('CTRL_TIMESTEP'))
             # print(reward)
             if done or truncated:
                 # TODO: Fix this to add the final state into visual
@@ -86,13 +86,13 @@ def sample_trajectories_from_file(file, output_filename, show=True, human=False,
                 print(f"Done: {i}")
                 break
             x, _, z, _ = info["original_state"]
-            if reward < -2.0:
-                hanging.append(False)
-            else:
-                hanging.append(True)
-            trajectory.append(np.array([x, z]))
-        trajectory_states.append(trajectory)
-        hanging_states.append(hanging)
+            # if reward < -2.0:
+            #     hanging.append(False)
+            # else:
+            #     hanging.append(True)
+        #     trajectory.append(np.array([x, z]))
+        # trajectory_states.append(trajectory)
+        # hanging_states.append(hanging)
     env.close()
 
     plot_trajectories(trajectory_states, output_filename=output_filename, show_plot=show)
