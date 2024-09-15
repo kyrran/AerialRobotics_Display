@@ -36,14 +36,17 @@ class HoveringWrapper(gym.Wrapper):
     def get_hover_ratio(self):
         return min(self.episode_count, 300.0) / 300.0
 
-    def step(self, action):
+    def step(self, action, num_wraps=None):
         
         action = np.reshape(action, (self.NUM_DRONES, -1))
         # print(f"hovering wrapper action given:{action}")
         
         # print(f"in hover, the action given is: {action}")
         # Take a step using the underlying environment
-        obs, reward, done, truncated, info = self.env.step(action)
+        if num_wraps is None:
+            obs, reward, done, truncated, info = self.env.step(action)
+        else:
+            obs, reward, done, truncated, info = self.env.step(action, num_wraps)
         # print(obs.shape)
         # Update the hover count if the action size is less than 0.1
         # is_small_action = np.linalg.norm(action)

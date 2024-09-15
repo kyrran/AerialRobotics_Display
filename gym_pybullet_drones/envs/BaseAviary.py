@@ -263,7 +263,7 @@ class BaseAviary(gym.Env):
     ################################################################################
 
     def step(self,
-             action
+             action, num_wraps= None
              ):
         """Advances the environment by one simulation step.
 
@@ -398,7 +398,10 @@ class BaseAviary(gym.Env):
         self._updateAndStoreKinematicInformation()
         #### Prepare the return values #############################
         obs = self._computeObs()
-        reward = self._computeReward()
+        if num_wraps is None:
+            reward = self._computeReward()
+        else:
+            reward = self._computeReward(num_wraps)
         terminated = self._computeTerminated()
         truncated = self._computeTruncated()
         info = self._computeInfo()
@@ -1094,7 +1097,7 @@ class BaseAviary(gym.Env):
 
     ################################################################################
 
-    def _computeReward(self):
+    def _computeReward(self, num_wraps = None):
         """Computes the current reward value(s).
 
         Must be implemented in a subclass.

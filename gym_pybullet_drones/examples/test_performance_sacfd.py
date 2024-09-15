@@ -63,7 +63,9 @@ def test_agent(agent, env, save_directory, num_episodes=5):
     env.close()
 
 # Example path for model and save directory
-path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/save-algorithm-SACfD-09.11.2024_01.48.35-1200000/"
+path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/expr/save-algorithm-SACfD-09.13.2024_12.20.51-1200000_6_demos_+3_new/"
+# path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/final/save-algorithm-SACfD-09.15.2024_03.09.10-1200002/"
+# path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/expr/save-algorithm-SACfD-09.13.2024_20.36.44-1200000_5_demos_new_demos_new_reward_5_error_+3/"
 model_path = path + "best_model.zip"
 save_directory = path + "episode_positions/"
 

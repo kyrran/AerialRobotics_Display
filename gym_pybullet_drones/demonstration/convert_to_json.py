@@ -30,7 +30,7 @@ def transform_demo(env, version, file_path):
 
     has_hit = False
     for _, row in df.iterrows():
-        if row['drone_x'] > 0.0:
+        if row['drone_x'] < 0.0:
             has_hit = True
         num_wraps = 2.0 if has_hit else 0.0
         waypoints.append((row['drone_x'], row['drone_y'], row['drone_z'], num_wraps))
@@ -41,6 +41,7 @@ def step_pair_calculation(env, waypoints, version):
     """Calculate state-action-reward pairs from waypoints with synchronization."""
     state_action_reward = []
     reward_history = []  # Track rewards over time
+    wrap_history = []
     curr_x, curr_y, curr_z, curr_w = waypoints[0]
 
     env.reset(position=np.array([curr_x, curr_y, curr_z]))
@@ -50,15 +51,19 @@ def step_pair_calculation(env, waypoints, version):
     for i in range(1, len(waypoints)):
         next_x, next_y, next_z, next_w = waypoints[i]
         action = np.array([next_x, next_y, next_z]).reshape((env.num_drones, -1))
-        obs, reward, done, truncated, _ = env.step(action)
+        
+        obs, reward, done, truncated, info = env.step(action)
+        
+        next_w = info['num_wraps']
+        
         env.render()
-
+        # print(info['num_wraps'])
         # Calculate reward and check if done
         # reward, done = env.calc_reward_and_done((curr_x, curr_y, curr_z), next_w)
 
         # Store the reward for visualization
         reward_history.append(reward)
-
+        wrap_history.append(curr_w)
         action_diff_actual = (obs[0] - curr_x, obs[1] - curr_y, obs[2] - curr_z)
 
         state_action_reward.append(((curr_x, curr_y, curr_z, curr_w),
@@ -73,14 +78,15 @@ def step_pair_calculation(env, waypoints, version):
         #     break
 
     # After simulation is done, plot the reward history
-    plot_rewards(reward_history)
+    plot_rewards(reward_history,wrap_history)
 
     return save_to_json(state_action_reward, version)
 
-def plot_rewards(reward_history):
+def plot_rewards(reward_history,wrap_history):
     """Plot rewards over time."""
     plt.figure(figsize=(10, 6))
     plt.plot(reward_history, label='Reward')
+    plt.plot(wrap_history, label='wraps')
     plt.xlabel('Timestep')
     plt.ylabel('Reward')
     plt.title('Reward over Time')

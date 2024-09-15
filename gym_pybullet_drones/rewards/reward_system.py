@@ -55,7 +55,7 @@ class RewardSystem():
         """
         ### 1. Approaching reward - focuses on getting close to the branch
         approaching_reward = self.approaching_reward.reward_fun(state, has_contacted, dist_tether_branch, dist_drone_branch, num_wraps,weight_pos)
-        assert -5 <= approaching_reward <= 2, f"Invalid approaching_reward: {approaching_reward}"
+        assert -1 <= approaching_reward <= 1, f"Invalid approaching_reward: {approaching_reward}"
 
         
         # if has_contacted:

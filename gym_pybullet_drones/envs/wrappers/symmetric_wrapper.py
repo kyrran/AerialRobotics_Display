@@ -21,7 +21,7 @@ class SymmetricWrapper(gym.Wrapper):
         self.positive = True
         self.NUM_DRONES =  env.get_wrapper_attr('NUM_DRONES')
 
-    def step(self, action: np.ndarray) -> Tuple[np.ndarray, float, bool, bool, Dict[Any, Any]]:
+    def step(self, action: np.ndarray, num_wraps=None) -> Tuple[np.ndarray, float, bool, bool, Dict[Any, Any]]:
         action = np.reshape(action, (self.NUM_DRONES, -1))
         # print(f"symmatric wrapper action given:{action}")
         # Adjust action
@@ -32,8 +32,10 @@ class SymmetricWrapper(gym.Wrapper):
             new_action = np.reshape(np.array([-1 * x, y, z]),(self.NUM_DRONES, -1))
 
         # print(f"in symm, the action given is: {action}")
-        state, reward, terminated, truncated, info = self.env.step(new_action)
-        
+        if num_wraps is None:
+            state, reward, terminated, truncated, info = self.env.step(new_action)
+        else:
+            state, reward, terminated, truncated, info = self.env.step(new_action, num_wraps)
         # print(f"state-symmetric{state}")
 
         info["original_state"] = state

@@ -39,14 +39,14 @@ class PositionWrapper(gym.Wrapper):
         self.counter = 0
         
         
-    def step(self, action: np.ndarray) -> Tuple[np.ndarray, float, bool, bool, Dict[Any, Any]]:
+    def step(self, action: np.ndarray, num_wraps=None) -> Tuple[np.ndarray, float, bool, bool, Dict[Any, Any]]:
         
         action = np.reshape(action, (self.NUM_DRONES, -1))
         
         self.counter += 1
         # print(f"in position, the action given is: {action}")
         # Execute the step in the environment with the intended action
-        state, reward, terminated, truncated, info = self._take_single_step(action)
+        state, reward, terminated, truncated, info = self._take_single_step(action, num_wraps)
         
         avg_reward = reward
 
@@ -64,10 +64,12 @@ class PositionWrapper(gym.Wrapper):
         return state, info
 
 
-    def _take_single_step(self, action: np.ndarray) -> Tuple[np.ndarray, float, bool, bool, Dict[Any, Any]]:
+    def _take_single_step(self, action: np.ndarray, num_wraps=None) -> Tuple[np.ndarray, float, bool, bool, Dict[Any, Any]]:
         # Calculate direction vector
-
-        state, reward, terminated, truncated, info = self.env.step(action)
+        if num_wraps is None:
+            state, reward, terminated, truncated, info = self.env.step(action)
+        else:
+            state, reward, terminated, truncated, info = self.env.step(action,num_wraps)
 
         self.current_state = state
 

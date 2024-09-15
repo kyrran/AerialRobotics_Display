@@ -159,7 +159,7 @@ def get_agent(algorithm, env, demo_path, show_demos_in_env, hyperparams, filenam
             learning_rate=_lr_schedular,
             gamma=0.96,
             policy_kwargs=_policy_kwargs,
-            tensorboard_log= "./logs/",
+            tensorboard_log= "./logs/final/",
             verbose=1
         )
     elif algorithm == "SACfD":
@@ -173,7 +173,7 @@ def get_agent(algorithm, env, demo_path, show_demos_in_env, hyperparams, filenam
             gamma=0.96,
             learning_rate=_lr_schedular_sacfD,
             replay_buffer_class=DualReplayBuffer,
-            tensorboard_log= "./logs/",
+            tensorboard_log= "./logs/final/",
             verbose = 1
         )
         pre_train(agent, env, demo_path, show_demos_in_env)
@@ -236,30 +236,14 @@ def test_agent(agent, env, num_episodes=5):
         
         print(f"Episode {episode + 1}: Total Reward = {total_reward}")
         
-        
-        # obs2 = obs.squeeze()
-        # act2 = action.squeeze()
-        
-        # env.logger.log(drone=0,
-        #             timestamp=episode/env.CTRL_FREQ,
-        #             state=np.hstack([obs2[0:3],
-        #                                 np.zeros(4),
-        #                                 obs2[3:15],
-        #                                 act2
-        #                                 ]),
-        #             control=np.zeros(12),
-        #             payload_position = payload_position
-        #             )
+    
     env.close()
     
-    # env.logger.save()
-    # env.logger.save_as_csv("pid")
-    # env.logger.plot()
-
+   
 def main(algorithm, timesteps, demo_path, should_show_demo , hyperparams):
     from gym_pybullet_drones.utils.TensorboardCallback import TensorboardCallback
     #output folder named models
-    filename = os.path.join("models", 'save-algorithm-'+ algorithm +'-' +datetime.now().strftime("%m.%d.%Y_%H.%M.%S")+'-'+ str(timesteps))
+    filename = os.path.join("models/final/", 'save-algorithm-'+ algorithm +'-' +datetime.now().strftime("%m.%d.%Y_%H.%M.%S")+'-'+ str(timesteps))
     
     if not os.path.exists(filename):
         os.makedirs(filename+'/')

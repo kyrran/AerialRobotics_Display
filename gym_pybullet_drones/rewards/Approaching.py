@@ -13,7 +13,7 @@ class CircularApproachingReward():
         self.down_centre_x
         self.up_centre_x, self.up_centre_y, self.up_centre_z, self.up_start, self.up_end = 0,0, 4.5, 0, 180
         self.radius = 3
-        self.reward_penalty = 1
+        self.reward_penalty = 3
 
 
         self.branch_pos = branch_pos
@@ -152,6 +152,6 @@ class CircularApproachingReward():
         if dist_tether_branch < self.collision_threshold / 5:  # Close to the center
             return 1
         elif dist_tether_branch < self.collision_threshold * 2:  # Quite close to the branch
-            return interpolate_distance(distance=dist_tether_branch, max_dist_value=self.collision_threshold, max_penalty=1, min_dist_value=self.collision_threshold * 2, min_penalty=0)
+            return interpolate_distance(distance=dist_tether_branch, max_dist_value=self.collision_threshold/5, max_penalty=1, min_dist_value=self.collision_threshold * 2, min_penalty=0)
         else:
             return 0

@@ -70,10 +70,13 @@ class BulletDroneEnv(TetherModelSimulationEnvPID):
         aug_state = np.append(reset_pos, 0.0).astype(np.float32)
         return aug_state, {}
 
-    def step(self, action: np.ndarray) -> Tuple[np.ndarray, float, bool, bool, Dict[Any, Any]]:
+    def step(self, action: np.ndarray,num_wraps=None) -> Tuple[np.ndarray, float, bool, bool, Dict[Any, Any]]:
         action = np.reshape(action, (self.NUM_DRONES, -1))
         # print(f"in bullet, the action given is: {action}")
-        obs, reward, terminated, truncated, info = super().step(action)
+        if num_wraps is None:
+            obs, reward, terminated, truncated, info = super().step(action)
+        else:
+            obs, reward, terminated, truncated, info = super().step(action, num_wraps)
         current_position = self.get_drone_currrent_pos()
         num_wraps = info['num_wraps']
         augmented_state = np.append(current_position, num_wraps).astype(np.float32)

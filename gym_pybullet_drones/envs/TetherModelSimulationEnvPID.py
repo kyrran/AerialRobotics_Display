@@ -204,7 +204,7 @@ class TetherModelSimulationEnvPID(BaseAviary):
         self.weight_cumulative_angle_change = 0
         self.initialize_simulation_components(branch_pos = branch_pos)
          
-    def step(self, action):
+    def step(self, action, num_wraps= None):
         action = np.reshape(action, (self.NUM_DRONES, -1))
 
         is_wrapping = self.check_if_wrapping()
@@ -224,7 +224,11 @@ class TetherModelSimulationEnvPID(BaseAviary):
         # print(distance)
         
         threshold = self.tether.length +self.tether.offset + self.weight.RADIUS + 0.03
-        obs, reward, terminated, truncated, info = super().step(new_action)
+        
+        if num_wraps is None:
+            obs, reward, terminated, truncated, info = super().step(new_action)
+        else:
+            obs, reward, terminated, truncated, info = super().step(new_action, num_wraps)
         # If the distance exceeds the tether length, restrict the drone's movement
         # if distance > threshold:
           
@@ -386,7 +390,7 @@ class TetherModelSimulationEnvPID(BaseAviary):
         else:
             print("[ERROR] in BaseRLAviary._computeObs()")
 
-    def _computeReward(self):
+    def _computeReward(self, num_wraps= None):
         
         """Computes the reward based on the current state and action."""
         
@@ -396,8 +400,10 @@ class TetherModelSimulationEnvPID(BaseAviary):
         
         dist_tether_branch = self._distance(self.tether.get_last_one_third_point(), self.branch.get_tree_branch_midpoint())
         dist_drone_branch = self._distance(state, self.branch.get_tree_branch_midpoint())
-        num_rotations = self.compute_total_rotation() if has_tether_contacted_branch else 0.0
-        
+        if num_wraps is None:
+            num_rotations = self.compute_total_rotation() if has_tether_contacted_branch else 0.0
+        else:
+            num_rotations = num_wraps
         velocity = self._getDroneStateVector(0)[10:13]
         weight_pos = self.weight.get_position()
         reward = self.reward_system.calculate(state, has_tether_contacted_branch, dist_tether_branch, dist_drone_branch, num_rotations,weight_pos)
@@ -593,7 +599,7 @@ class TetherModelSimulationEnvPID(BaseAviary):
             
             # Apply a force propo
             # rtional to how much the tether is stretched
-            force_magnitude = 50 * (dist_drone_to_branch -   self.remaining_length_tether)
+            force_magnitude = 1.2* (dist_drone_to_branch -   self.remaining_length_tether)
 
             # Debugging logs to check force and direction
             # print(f"Applying tether force. Force magnitude: {force_magnitude}, Direction: {direction}")
