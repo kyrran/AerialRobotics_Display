@@ -1,5 +1,5 @@
 from gym_pybullet_drones.utils.util_graphics import print_green, print_red
-from gym_pybullet_drones.utils.util_file import load_json, make_dir
+from gym_pybullet_drones.utils.util_file import load_json
 from gym_pybullet_drones.utils.args_parsing import StoreDict
 from gym_pybullet_drones.utils.rl.lr_schedular import LinearLearningRateSchedule
 from stable_baselines3.common.monitor import Monitor
@@ -9,15 +9,11 @@ import numpy as np
 import glob
 import os
 import time
-import pybullet as p
 
-from pybullet_utils import bullet_client as bc
-
-import pybullet_data
-from gym_pybullet_drones.utils.utils import str2bool, sync
+from gym_pybullet_drones.utils.utils import sync
 from gym_pybullet_drones.algorithms.sacfd import SACfD
 from gym_pybullet_drones.algorithms.dual_buffer import DualReplayBuffer
-from stable_baselines3 import SAC,PPO
+from stable_baselines3 import SAC
 
 from gym_pybullet_drones.envs.bullet_drone_env import BulletDroneEnv
 
@@ -27,15 +23,9 @@ from gym_pybullet_drones.envs.wrappers.hovering_wrapper import HoveringWrapper
 
 
 from stable_baselines3.common.evaluation import evaluate_policy
-from stable_baselines3.common.env_util import make_vec_env
-from stable_baselines3.common.callbacks import EvalCallback, StopTrainingOnRewardThreshold
-from gym_pybullet_drones.algorithms.SaveOnBestTrainingRewardCallback import SaveOnBestTrainingRewardCallback
-from stable_baselines3.common.results_plotter import load_results, ts2xy, plot_results
-from stable_baselines3.common import results_plotter
-import matplotlib.pyplot as plt
-
 from gym_pybullet_drones.algorithms.CustomEvalCallback import CustomEvalCallback
-    
+
+from gym_pybullet_drones.utils.TensorboardCallback import TensorboardCallback
     
 
 DEMO_PATH = "../demonstration/rl_demos_new"
@@ -53,9 +43,7 @@ def show_in_env(env, transformed_data):
        
         obs, reward, done, truncated, _ = env.step(action)
         
-        print(f"State: {next_obs}, Simulated State: {obs}")
-        # print(f"Reward: {reward1}, Simulated reward: {reward}")
-        # print(f"action: {action}")
+        # print(f"State: {next_obs}, Simulated State: {obs}")
         
         env.render()
 
@@ -65,12 +53,6 @@ def show_in_env(env, transformed_data):
             print("1Episode finished")
             break
         
-    # while not done and not truncated:
-    #     _, _, done, truncated, _ = env.step(obs[:3])
-    #     if done:
-    #         print("Episode finished")
-    #     if truncated:
-    #         print("Episode Truncated")
             
         
 # ----------------------------------- DATA ------------------------------------
@@ -85,6 +67,7 @@ def get_buffer_data(env, directory, show_demos_in_env):
     for file in files:
         print(file)
         json_data = load_json(file)
+        
         transformed_data = convert_data(env, json_data)
         
         if show_demos_in_env:
@@ -113,21 +96,14 @@ def convert_data(env, json_data):
         x, y, z, t = _next_obs
         next_obs = np.append(np.array(np.array([x, y, z, t])), (num + 1) / 300.0)
         
-        
-        # print(f"before:{np.array(item['action'])}")
-        # Normalised action TODO: Define this relative to the env so it's consistent
-        # x1,y1,z1 = np.array(item['action'])
-        
-        # action = np.array([x1-x, y1-y,z1-z])
         action = np.array(item['action'])
-        # print(f"after:{action}")
+
         reward = np.array(item['reward'])
         done = np.array([False])
         info = [{}]
         dataset.append((obs, next_obs, action, reward, done, info))
         num = num + 1
-    # last_action = np.array(next_obs)
-    
+
     for _ in range(1):  # Adds an extra action on the end which helps with wrapping.
         dataset.append((next_obs, next_obs, next_obs[:3], reward, done, info))
     dataset.append((next_obs, next_obs, next_obs[:3], reward, np.array([True]), info))
@@ -184,10 +160,6 @@ def get_agent(algorithm, env, demo_path, show_demos_in_env, hyperparams, filenam
 
 def pre_train(agent, env, demo_path, show_demos_in_env):
     from stable_baselines3.common.logger import configure
-    # tmp_path = "/tmp/sb3_log/"
-    # # set up logger
-    # new_logger = configure(tmp_path, ["stdout", "csv", "tensorboard"])
-    # agent.set_logger(new_logger)
 
     data = get_buffer_data(env, demo_path, show_demos_in_env)
     # print(data[-1])
@@ -195,11 +167,6 @@ def pre_train(agent, env, demo_path, show_demos_in_env):
 
     for i in range(5):
         for obs, next_obs, action, reward, done, info in data:
-            # obs = obs[:7]  # Only take the first 4 elements
-            # next_obs = next_obs[:7]  # Same for next observation
-            # print(f"main action:{action}")
-            # print(f"obs, next obs, action:{obs.shape},{next_obs.shape},{action.shape}")
-            # print(f"Pre-training with obs, action, next state, reward: {obs},{action},{next_obs} reward: {reward}")
             agent.replay_buffer._add_offline(obs, next_obs, action, reward, done, info)
     print("Online Buffer Size: ", agent.replay_buffer.online_replay_buffer.size())
     print("Offline Buffer Size: ", agent.replay_buffer.offline_replay_buffer.size())
@@ -217,12 +184,12 @@ def test_agent(agent, env, num_episodes=5):
         total_reward = 0
         counter = 0
         while not done or not truncated:
-             # Ensure obs is in the correct format
-            # print(f"Episode {episode + 1}, Step {counter}: Observation shape: {obs}")
+            
             action, _states = agent.predict(obs, deterministic=True)
-            # print(f"Testing, action: {action}")
+      
             obs, reward, done, truncated, info = env.step(action)
-            print("Obs:", obs, "\tAction", action, "\tReward:", reward, "\tTerminated:", done, "\tTruncated:", truncated)
+            
+            # print("Obs:", obs, "\tAction", action, "\tReward:", reward, "\tTerminated:", done, "\tTruncated:", truncated)
         
             payload_position = env.get_wrapper_attr('weight').get_position()
             
@@ -230,18 +197,16 @@ def test_agent(agent, env, num_episodes=5):
             env.render()
             sync(counter, start, env.get_wrapper_attr('CTRL_TIMESTEP'))
             if done or truncated:
-                # print(f"hi, obs:{obs.shape}")
                 break
             counter += 1
         
         print(f"Episode {episode + 1}: Total Reward = {total_reward}")
         
-    
     env.close()
     
    
 def main(algorithm, timesteps, demo_path, should_show_demo , hyperparams):
-    from gym_pybullet_drones.utils.TensorboardCallback import TensorboardCallback
+    
     #output folder named models
     filename = os.path.join("models/", 'save-algorithm-'+ algorithm +'-' +datetime.now().strftime("%m.%d.%Y_%H.%M.%S")+'-'+ str(timesteps))
     
