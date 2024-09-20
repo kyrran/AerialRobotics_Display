@@ -231,8 +231,12 @@ class TetherModelSimulationEnvPID(BaseAviary):
         
         return obs, reward, terminated, truncated, info
     
+    ##############################################################################################
+    '''reference: https://github.com/utiasDSL/gym-pybullet-drones'''
     def _actionSpace(self):
-        """Returns the action space of the environment.
+        """
+        
+        Returns the action space of the environment.
 
         Returns
         -------
@@ -260,6 +264,7 @@ class TetherModelSimulationEnvPID(BaseAviary):
     def _preprocessAction(self,
                           action
                           ):
+        '''reference: https://github.com/utiasDSL/gym-pybullet-drones'''
         """Pre-processes the action passed to `.step()` into motors' RPMs.
 
         Parameter `action` is processed differenly for each of the different
@@ -355,6 +360,7 @@ class TetherModelSimulationEnvPID(BaseAviary):
             print("[ERROR] in BaseRLAviary._observationSpace()")
     
     def _computeObs(self):
+        '''reference: https://github.com/utiasDSL/gym-pybullet-drones'''
         """Returns the current observation of the environment.
 
         Returns
@@ -479,6 +485,7 @@ class TetherModelSimulationEnvPID(BaseAviary):
         return angle_change
         
     def compute_total_rotation(self):
+        '''reference: https://github.com/TommyWoodley/TommyWoodleyMEngProject'''
         # Get the position of the weight
         (weight_x, _, weight_y), _ = p.getBasePositionAndOrientation(self.weight.get_weight_id())
         
@@ -633,6 +640,7 @@ class TetherModelSimulationEnvPID(BaseAviary):
     
     
     def any_tether_contact_branch(self):
+        '''https://github.com/TommyWoodley/TommyWoodleyMEngProject'''
         for part_id in self.tether.get_segments():
             contacts = p.getContactPoints(bodyA=self.branch_body_id, bodyB=part_id)
             if contacts:

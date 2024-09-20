@@ -13,7 +13,10 @@ import pybullet as p
 import pybullet_data
 import gymnasium as gym
 from gym_pybullet_drones.utils.enums import DroneModel, Physics, ImageType
-
+#################
+'''the base env is from gym-pybullet-drones project:https://github.com/utiasDSL/gym-pybullet-drones
+'''
+################
 
 class BaseAviary(gym.Env):
     """Base class for "drone aviary" Gym environments."""

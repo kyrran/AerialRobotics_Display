@@ -57,17 +57,6 @@ class RewardSystem():
         approaching_reward = self.approaching_reward.reward_fun(state, has_contacted, dist_tether_branch, dist_drone_branch, num_wraps,weight_pos)
         assert -1 <= approaching_reward <= 1, f"Invalid approaching_reward: {approaching_reward}"
 
-        
-        # if has_contacted:
-        #     # Reward for increasing the number of wraps (positive wrapping)
-        #     if num_wraps >= abs(self.previous_num_rotations):
-        #         wrapping_reward = np.clip(num_wraps, 0, None)  # Only positive or steady wraps count
-        #         wrapping_reward += 0.1 * num_wraps  # Extra incentive for sustained wrapping
-        #     else:
-        #         # Penalize if the net number of wraps decreases significantly (indicating unwrapping)
-        #         wrapping_reward = -0.5 * abs(self.previous_num_rotations - num_wraps)  # Penalty for reversing
-        # else:
-        #     wrapping_reward = 0  
 
         ### 2. Wrapping reward - smoothly increases with number of wraps
         wrapping_reward = tanh_wrap_reward(num_wraps, k=2, max_reward=1) 

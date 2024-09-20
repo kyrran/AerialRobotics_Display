@@ -84,6 +84,7 @@ class CircularApproachingReward():
 
 
     def _calculate_sector_reward(self, state):
+        '''https://github.com/TommyWoodley/TommyWoodleyMEngProject'''
         x, y, z = state
         #down_center)xyz is the branch position
         is_within, norm_distance = self._within_sector(self.down_centre_x, self.down_centre_y, self.down_centre_z, self.radius,
@@ -99,6 +100,7 @@ class CircularApproachingReward():
         return 0.0
 
     def _within_sector(self, center_x, center_y, center_z, radius, start_angle, end_angle, point_x, point_y,point_z):
+        '''https://github.com/TommyWoodley/TommyWoodleyMEngProject'''
         distance = math.sqrt((point_x - center_x) ** 2 + (point_y - center_y) ** 2 +(point_z - center_z) ** 2)
         # distance = math.sqrt((point_x - center_x) ** 2 +(point_z - center_z) ** 2)
 
