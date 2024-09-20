@@ -36,7 +36,8 @@ def test_agent(agent, env, save_directory, num_episodes=5):
             # Get drone and payload positions
             drone_position = obs[:3]  # Assuming the first 3 values in obs are the drone's x, y, z positions
             payload_position = env.get_wrapper_attr('weight').get_position()
-            
+            drone_velocity = env.get_wrapper_attr('vel')[0]  # Assuming `self.vel` is accessible as an attribute of the environment
+            print(drone_velocity.mean())
             # Calculate the real-world time elapsed since the start of the episode
             real_time_elapsed = time.time() - start_time
             
@@ -44,7 +45,7 @@ def test_agent(agent, env, save_directory, num_episodes=5):
             episode_positions.append((real_time_elapsed, drone_position, payload_position))
             
             total_reward += reward
-            env.render()
+            # env.render()
             sync(counter, start_time, env.get_wrapper_attr('CTRL_TIMESTEP'))
             if done or truncated:
                 break
@@ -63,9 +64,15 @@ def test_agent(agent, env, save_directory, num_episodes=5):
     env.close()
 
 # Example path for model and save directory
-path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/expr/save-algorithm-SACfD-09.13.2024_12.20.51-1200000_6_demos_+3_new/"
-# path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/final/save-algorithm-SACfD-09.15.2024_03.09.10-1200002/"
+# path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/expr/save-algorithm-SACfD-09.13.2024_12.20.51-1200000_6_demos_+3_new/"
 # path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/expr/save-algorithm-SACfD-09.13.2024_20.36.44-1200000_5_demos_new_demos_new_reward_5_error_+3/"
+# path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/expr/save-algorithm-SACfD-09.13.2024_20.37.08-1200001_2_demos_new_demos_new_reward_+3_5_error/"
+# path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/400-episode/save-algorithm-SACfD-09.15.2024_17.03.55-120001_2_demos/"
+# path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/400-episode/save-algorithm-SACfD-09.15.2024_17.05.01-120002_6_months/"
+# path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/save-algorithm-SACfD-09.17.2024_13.41.38-1200000/"
+
+path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/400-episode/save-algorithm-SACfD-09.15.2024_16.47.40-120000_5_demos/"
+
 model_path = path + "best_model.zip"
 save_directory = path + "episode_positions/"
 

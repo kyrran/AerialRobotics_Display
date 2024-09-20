@@ -18,7 +18,7 @@ class BulletDroneEnv(TetherModelSimulationEnvPID):
     # metadata = {"render_modes": ["console", "human"]}
     reset_pos = [2, 0, 3]
     centre_pos = np.array([0.0, 0.0, 2.7])  # Goal state
-    reset_pos_distance = 2.0
+    reset_pos_distance = 2
 
     def __init__(self, render_mode: str = "human", phase: str = "all", log_dir=None, branch_pos=[0,0,2.7], tether_length = 1.0, client = None, gui = True) -> None:
         super().__init__(start_pos=self._generate_reset_position(42), branch_init_pos=branch_pos, gui = gui)

@@ -159,7 +159,7 @@ def get_agent(algorithm, env, demo_path, show_demos_in_env, hyperparams, filenam
             learning_rate=_lr_schedular,
             gamma=0.96,
             policy_kwargs=_policy_kwargs,
-            tensorboard_log= "./logs/final/",
+            tensorboard_log= "./logs/",
             verbose=1
         )
     elif algorithm == "SACfD":
@@ -173,7 +173,7 @@ def get_agent(algorithm, env, demo_path, show_demos_in_env, hyperparams, filenam
             gamma=0.96,
             learning_rate=_lr_schedular_sacfD,
             replay_buffer_class=DualReplayBuffer,
-            tensorboard_log= "./logs/final/",
+            tensorboard_log= "./logs/",
             verbose = 1
         )
         pre_train(agent, env, demo_path, show_demos_in_env)
@@ -243,7 +243,7 @@ def test_agent(agent, env, num_episodes=5):
 def main(algorithm, timesteps, demo_path, should_show_demo , hyperparams):
     from gym_pybullet_drones.utils.TensorboardCallback import TensorboardCallback
     #output folder named models
-    filename = os.path.join("models/final/", 'save-algorithm-'+ algorithm +'-' +datetime.now().strftime("%m.%d.%Y_%H.%M.%S")+'-'+ str(timesteps))
+    filename = os.path.join("models/", 'save-algorithm-'+ algorithm +'-' +datetime.now().strftime("%m.%d.%Y_%H.%M.%S")+'-'+ str(timesteps))
     
     if not os.path.exists(filename):
         os.makedirs(filename+'/')

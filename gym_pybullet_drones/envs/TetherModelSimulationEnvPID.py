@@ -161,7 +161,7 @@ class TetherModelSimulationEnvPID(BaseAviary):
         self.weight = Weight(payload_start_position_top)
         self.tether.attach_weight(self.weight)
         
-        self.TARGET_POS = np.array([0,0,3.2])
+        # self.TARGET_POS = np.array([0,0,3.2])
         # print(self.TARGET_POS)
         
         

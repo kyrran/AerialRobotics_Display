@@ -138,7 +138,8 @@ if __name__ == "__main__":
     #     hover_height=args.hover_height
     # )
     
-    start_pos = np.array([1.6248056640625,0,0.16617747497558594])
+    # start_pos = np.array([1.6248056640625,0,0.16617747497558594])[
+    start_pos = np.array([1.6,0,3])
     simulation = TetherModelSimulationEnvPID(start_pos=start_pos,
         drone=args.drone,
         num_drones=args.num_drones,

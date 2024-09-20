@@ -56,8 +56,8 @@ class PositionWrapper(gym.Wrapper):
     
     
     def reset(self, seed: int = None, options: Dict[Any, Any] = None,
-              degrees: int = None, position=None) -> Tuple[np.ndarray, Dict[Any, Any]]:
-        state, info = self.env.reset(seed, options, degrees, position)
+              degrees: int = None, position=None,branch_pos = None) -> Tuple[np.ndarray, Dict[Any, Any]]:
+        state, info = self.env.reset(seed, options, degrees, position, branch_pos = None)
         self.current_state = state
         self.num_steps = 0
         self.counter = 0

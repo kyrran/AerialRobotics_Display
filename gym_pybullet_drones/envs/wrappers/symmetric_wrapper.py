@@ -49,8 +49,8 @@ class SymmetricWrapper(gym.Wrapper):
         return new_state, reward, terminated, truncated, info
 
     def reset(self, seed: int = None, options: Dict[Any, Any] = None,
-              degrees: int = None, position=None) -> Tuple[np.ndarray, Dict[Any, Any]]:
-        state, info = self.env.reset(seed, options, degrees, position)
+              degrees: int = None, position=None, branch_pos=None) -> Tuple[np.ndarray, Dict[Any, Any]]:
+        state, info = self.env.reset(seed, options, degrees, position, branch_pos)
         x, y, z, t = state  # Do we need this line?
         if x >= 0:
             self.positive = True

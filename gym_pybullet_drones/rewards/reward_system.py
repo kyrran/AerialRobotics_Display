@@ -90,13 +90,13 @@ class RewardSystem():
         if num_wraps > 0.5:
             # 1 + (0~2) = 1~3
             # print("++++++++++++wrapping+++++++-")  
-            total_reward = 2 + 2*wrapping_reward + distance_reward #-1,1+ 1,2, -1,1 = 1,3
+            total_reward = 2* approaching_reward + 2*wrapping_reward + distance_reward #-1,1+ 1,2, -1,1 = 1,3
     
             if num_wraps > 1.0:
                 print("##############################")
                 print("########hanging#############")
                 # (-1,1) + 1~3 = 0,2 ~ 2,4 => 0,4
-                total_reward += hanging_reward
+                total_reward = 2+ 2*wrapping_reward + distance_reward+  hanging_reward
                 done = hanging_done
             else:
                 done = False
@@ -119,10 +119,10 @@ class RewardSystem():
         
         ### Track and save reward components for analysis
         self.approaching_rewards.append(approaching_reward)
-        # self.wrapping_rewards.append(wrapping_reward)
-        # self.hanging_rewards.append(hanging_reward)
-        self.distance_rewards.append(distance_reward)
-        self.num_wraps_list.append(num_wraps)
+        self.wrapping_rewards.append(wrapping_reward)
+        self.hanging_rewards.append(hanging_reward)
+        # self.distance_rewards.append(distance_reward)
+        # self.num_wraps_list.append(num_wraps)
         self.total_rewards.append(total_reward)
 
         # self.self_done_states = done
@@ -140,6 +140,8 @@ class RewardSystem():
         # plt.plot(self.total_rewards, label='Total Reward', marker='o', linestyle='--', alpha=0.2)
         # # plt.plot(self.num_wraps_list, label='No. Wraps', marker='o', linestyle='--', alpha=0.2)
         # plt.plot(self.approaching_rewards, label='approaching', marker='o', linestyle='--', alpha=0.2)
+        # plt.plot(self.hanging_rewards, label='hanging', marker='o', linestyle='--', alpha=0.2)
+        # plt.plot(self.wrapping_rewards, label='wrapping', marker='o', linestyle='--', alpha=0.2)
         # plt.xlabel('Time Steps')
         # plt.ylabel('Reward Value')
         # plt.title('Reward Components Over Time')

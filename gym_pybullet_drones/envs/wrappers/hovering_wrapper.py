@@ -25,9 +25,9 @@ class HoveringWrapper(gym.Wrapper):
         # print(self.observation_space.shape)
         self.NUM_DRONES = env.get_wrapper_attr('NUM_DRONES')
 
-    def reset(self, seed=None, options=None, degrees=None, position=None):
+    def reset(self, seed=None, options=None, degrees=None, position=None, branch_pos = None):
         # Reset the environment and hover count
-        obs, info = self.env.reset(seed, options, degrees, position)
+        obs, info = self.env.reset(seed, options, degrees, position,branch_pos)
         self.episode_count = 0
         # Return the augmented observation
         augmented_obs = np.append(obs, self.get_hover_ratio()).astype(np.float32)
