@@ -35,6 +35,7 @@ DEMO_PATH = "../demonstration/rl_demos_new"
 
 # Shows the demonstration data in the enviornment - useful for verification purpose
 def show_in_env(env, transformed_data):
+    '''https://github.com/TommyWoodley/TommyWoodleyMEngProject'''
     """Display the demonstration data in the environment."""
     done = False
     start_time = time.time()
@@ -59,7 +60,7 @@ def show_in_env(env, transformed_data):
 
 def get_buffer_data(env, directory, show_demos_in_env):
     """Load the demonstration data from JSON files and optionally display it in the environment."""
-    
+    '''https://github.com/TommyWoodley/TommyWoodleyMEngProject'''
     pattern = f"{directory}/rl_demo_new_*.json"
     files = glob.glob(pattern)
     all_data = []
@@ -84,6 +85,7 @@ def get_buffer_data(env, directory, show_demos_in_env):
 
 
 def convert_data(env, json_data):
+    '''https://github.com/TommyWoodley/TommyWoodleyMEngProject'''
     dataset = []
     num = 0
     for item in json_data:
@@ -213,7 +215,7 @@ def main(algorithm, timesteps, demo_path, should_show_demo , hyperparams):
     if not os.path.exists(filename):
         os.makedirs(filename+'/')
  
-    train_env = Monitor(HoveringWrapper(PositionWrapper(SymmetricWrapper(BulletDroneEnv(gui=False)))), filename)
+    train_env = Monitor(HoveringWrapper(PositionWrapper(SymmetricWrapper(BulletDroneEnv(gui=should_show_demo)))), filename)
 
     
     #### Check the environment's spaces ########################
