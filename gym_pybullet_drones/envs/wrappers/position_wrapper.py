@@ -2,25 +2,15 @@ import gymnasium as gym
 from gymnasium import spaces
 from typing import Dict, Any, Tuple
 import numpy as np
-
+'''reference:https://github.com/TommyWoodley/TommyWoodleyMEngProject'''
 
 class PositionWrapper(gym.Wrapper):
-    MAGNITUDE = 0.005
-    MAX_STEP = 0.25
-    # MAX = 6
-    # MIN = -3
-    NUM_ACTIONS_PER_STEP = 25
-
     def __init__(self, env) -> None:
         super().__init__(env)
 
         # Position Based Action Space
         self.action_space = env.action_space
-        # print(self.action_space)
-        # self.action_space = spaces.Box(low=-1, high=1, shape=(3,), dtype=np.float32)
-        # TODO: Do this relative to the other environments - make it nicer :)
-        # self.observation_space = spaces.Box(low=-np.inf, high=np.inf, shape=(5,), dtype=np.float32)
-        
+
         low = env.observation_space.low[0][:3]
         high = env.observation_space.high[0][:3]
         

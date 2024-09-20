@@ -2,15 +2,8 @@ import pybullet as p
 from typing import List
 import numpy as np
 
-
 class Weight:
-    
-    # MASS: float = 0.5
-    # RADIUS: float = 0.05
-    # DRAG_COEF: float = 0.472
-    
-    
-    
+
     MASS: float = 0.000001
     RADIUS: float = 0.03
 
@@ -31,6 +24,8 @@ class Weight:
         self.cross_area = 3 * self.RADIUS * self.RADIUS
 
     def create_weight(self) -> None:
+        
+        '''https://github.com/TommyWoodley/TommyWoodleyMEngProject'''
         collisionShapeId = p.createCollisionShape(p.GEOM_SPHERE, radius=self.RADIUS)
         visualShapeId = p.createVisualShape(p.GEOM_SPHERE, radius=self.RADIUS, rgbaColor=[0, 0, 1, 1.0])
 

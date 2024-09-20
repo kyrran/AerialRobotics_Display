@@ -7,8 +7,9 @@ import pandas as pd
 import time
 
 from gym_pybullet_drones.envs.TetherModelSimulationEnvPID import TetherModelSimulationEnvPID
-from gym_pybullet_drones.rewards.reward_system import RewardSystem
 
+
+'''reference:https://github.com/TommyWoodley/TommyWoodleyMEngProject'''
 
 class BulletDroneEnv(TetherModelSimulationEnvPID):
     """
@@ -103,10 +104,6 @@ class BulletDroneEnv(TetherModelSimulationEnvPID):
             np.random.seed(seed)
         angle = np.random.uniform(0, np.pi/3)
         
-        # while True:
-        #     angle = np.random.uniform(0, np.pi)
-        #     if not (45 <= angle <= 135):  # Exclude 60-120 degrees
-        #         break
         return self._generate_reset_position_from_radians(angle)
 
     def _generate_reset_position_from_degrees(self, degrees):
@@ -176,17 +173,6 @@ class BulletDroneEnv(TetherModelSimulationEnvPID):
 
         return False, np.inf
     
-    # def calc_reward(self, state, num_wraps=0.0):
-    #     branch_pos = np.array([0.0, 0.0, 2.7])  # Branch position
-    #     tether_pos = state - np.array([0, 0, 0.33])
-    #     dist_tether_branch = np.linalg.norm(tether_pos - branch_pos)
-    #     dist_drone_branch = np.linalg.norm(state - branch_pos)
-    #     has_collided = bool(dist_tether_branch < 0.1)
-
-    #     reward = self.reward.calculate(state, has_collided, dist_tether_branch, dist_drone_branch,
-    #                                          num_wraps=num_wraps)
-        
-    #     return reward
     
     def render(self):
         super().render()

@@ -3,6 +3,9 @@ import pybullet as p
 from typing import List, Any
 import random
 import math
+
+'''reference:https://github.com/TommyWoodley/TommyWoodleyMEngProject'''
+
 class Tether:
     RADIUS = 0.006
     # MASS = 0.05  # for 1 meter

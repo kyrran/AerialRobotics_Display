@@ -1,14 +1,9 @@
 import gymnasium as gym
 from typing import Dict, Any, Tuple
 import numpy as np
-
+'''reference:https://github.com/TommyWoodley/TommyWoodleyMEngProject'''
 
 class SymmetricWrapper(gym.Wrapper):
-    MAGNITUDE = 0.005
-    # MAX_STEP = 0.5
-    # MAX = 6
-    # MIN = -3
-    NUM_ACTIONS_PER_STEP = 25
 
     def __init__(self, env) -> None:
         super().__init__(env)
