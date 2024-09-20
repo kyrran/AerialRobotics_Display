@@ -68,7 +68,7 @@ gast==0.6.0
 geometry-msgs==4.2.4
 google-pasta==0.2.0
 grpcio==1.62.0
--e git+ssh://git@github.com/kyrran/learning_tethered_perching.git@7030736cc0d69c4494036294f13f63d529ed5320#egg=gym_pybullet_drones
+-e git+ssh://git@github.com/kyrran/learning_tethered_perching.git@4f97b0ddafd4e5f974259b93774548f5e1975015#egg=gym_pybullet_drones
 gymnasium==0.29.1
 h5py==3.11.0
 idna==3.6
