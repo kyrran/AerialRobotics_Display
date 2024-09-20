@@ -261,28 +261,6 @@ def main(algorithm, timesteps, demo_path, should_show_demo , hyperparams):
     
     agent = get_agent(algorithm, train_env, demo_path, should_show_demo, hyperparams, filename)
     
-     
-    ###############################################################################
-    ############# Evaluate using training reward - faster ##########################
-    ###############################################################################
-    
-    # save_best_callback = SaveOnBestTrainingRewardCallback(
-    #     check_freq=1000, # Save the model every 1000 steps
-    #     log_dir=filename, # Directory where to save the best model
-    #     verbose=1
-    # )
-    
-    
-    # agent.learn(timesteps, log_interval=10, progress_bar=True, callback=save_best_callback)
-    
-    
-    # plot_results([filename], timesteps, results_plotter.X_TIMESTEPS, "TD3 LunarLander")
-    # plt.show()
-    
-    ###############################################################################
-    ###############################################################################
-    
-    
     
     ###############################################################################
     ###############################################################################

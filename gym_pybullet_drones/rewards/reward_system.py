@@ -90,13 +90,13 @@ class RewardSystem():
         if num_wraps > 0.5:
             # 1 + (0~2) = 1~3
             # print("++++++++++++wrapping+++++++-")  
-            total_reward = 2* approaching_reward + 2*wrapping_reward + distance_reward #-1,1+ 1,2, -1,1 = 1,3
+            total_reward = 2 + 2*wrapping_reward + distance_reward #-1,1+ 1,2, -1,1 = 1,3
     
             if num_wraps > 1.0:
                 print("##############################")
                 print("########hanging#############")
                 # (-1,1) + 1~3 = 0,2 ~ 2,4 => 0,4
-                total_reward = 2+ 2*wrapping_reward + distance_reward+  hanging_reward
+                total_reward +=  hanging_reward
                 done = hanging_done
             else:
                 done = False

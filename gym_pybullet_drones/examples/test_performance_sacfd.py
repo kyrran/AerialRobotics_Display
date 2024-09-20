@@ -63,14 +63,6 @@ def test_agent(agent, env, save_directory, num_episodes=5):
     
     env.close()
 
-# Example path for model and save directory
-# path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/expr/save-algorithm-SACfD-09.13.2024_12.20.51-1200000_6_demos_+3_new/"
-# path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/expr/save-algorithm-SACfD-09.13.2024_20.36.44-1200000_5_demos_new_demos_new_reward_5_error_+3/"
-# path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/expr/save-algorithm-SACfD-09.13.2024_20.37.08-1200001_2_demos_new_demos_new_reward_+3_5_error/"
-# path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/400-episode/save-algorithm-SACfD-09.15.2024_17.03.55-120001_2_demos/"
-# path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/400-episode/save-algorithm-SACfD-09.15.2024_17.05.01-120002_6_months/"
-# path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/save-algorithm-SACfD-09.17.2024_13.41.38-1200000/"
-
 path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/400-episode/save-algorithm-SACfD-09.15.2024_16.47.40-120000_5_demos/"
 
 model_path = path + "best_model.zip"

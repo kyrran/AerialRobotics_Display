@@ -78,7 +78,7 @@ def step_pair_calculation(env, waypoints, version):
         #     break
 
     # After simulation is done, plot the reward history
-    plot_rewards(reward_history,wrap_history)
+    # plot_rewards(reward_history,wrap_history)
 
     return save_to_json(state_action_reward, version)
 

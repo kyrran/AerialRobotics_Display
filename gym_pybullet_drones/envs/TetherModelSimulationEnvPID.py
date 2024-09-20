@@ -9,7 +9,6 @@ from gym_pybullet_drones.control.DSLPIDControl import DSLPIDControl
 
 from gym_pybullet_drones.envs.BaseAviary import BaseAviary
 
-from gym_pybullet_drones.utils.Logger import Logger
 from gym_pybullet_drones.utils.utils import sync
 
 from gym_pybullet_drones.envs.simulationComponents.tether import Tether
@@ -94,14 +93,6 @@ class TetherModelSimulationEnvPID(BaseAviary):
                          user_debug_gui=False
                         )
         
-    
-        
-
-        self.logger = Logger(logging_freq_hz=control_freq_hz,
-                             num_drones=num_drones,
-                             output_folder=output_folder,
-                             colab=colab)
-
         self.ctrl = [DSLPIDControl(drone_model=drone) for _ in range(num_drones)]
         
         self.drone_id = self.getDroneIds()
