@@ -1,4 +1,10 @@
-# gym-pybullet-drones
+# Learning Tethered Drone Agile Perching Strategy
+
+This project learns an agile tethered drone perching strategy using reinforcement learning (RL) - SAC Learning from Demonstration (SACfD) technique. A detailed PyBullet simulation environment, integrating a PID controller and realistic drone dynamics was developed to model the complex interactions between the drone, tether, and payload.
+
+
+the drone model is a MAV model inheritrd from ['gym_pybullet_drones project'](https://github.com/utiasDSL/gym-pybullet-drones) with its compatiable pid controller developed by them. the mav model is approxiamte 1:10 mass ratio to the custimised drone used to test in real-world expreiments. The RL learning algorithm ustilized RL library ['Stable-Baseline3'](https://github.com/DLR-RM/stable-baselines3). 
+
 
 This is a minimalist refactoring of the original `gym-pybullet-drones` repository, designed for compatibility with [`gymnasium`](https://github.com/Farama-Foundation/Gymnasium), [`stable-baselines3` 2.0](https://github.com/DLR-RM/stable-baselines3/pull/1327), and SITL [`betaflight`](https://github.com/betaflight/betaflight)/[`crazyflie-firmware`](https://github.com/bitcraze/crazyflie-firmware/).
 
@@ -24,94 +30,17 @@ pip3 install -e . # if needed, `sudo apt install build-essential` to install `gc
 
 ## Use
 
-### PID control examples
-
-```sh
-cd gym_pybullet_drones/examples/
-python3 pid.py # position and velocity reference
-python3 pid_velocity.py # desired velocity reference
-```
-
-### Downwash effect example
-
-```sh
-cd gym_pybullet_drones/examples/
-python3 downwash.py
-```
-
-### Reinforcement learning examples (SB3's PPO)
-
-```sh
-cd gym_pybullet_drones/examples/
-python learn.py # task: single drone hover at z == 1.0
-python learn.py --multiagent true # task: 2-drone hover at z == 1.2 and 0.7
-```
+## Results
 
 <img src="gym_pybullet_drones/assets/rl.gif" alt="rl example" width="375"> <img src="gym_pybullet_drones/assets/marl.gif" alt="marl example" width="375">
 
-### utiasDSL `pycffirmware` Python Bindings example (multiplatform, single-drone)
-
-Install [`pycffirmware`](https://github.com/utiasDSL/pycffirmware?tab=readme-ov-file#installation) for Ubuntu, macOS, or Windows
-
-```sh
-cd gym_pybullet_drones/examples/
-python3 cff-dsl.py
-```
-
-### Betaflight SITL example (Ubuntu only)
-
-```sh
-git clone https://github.com/betaflight/betaflight # use the `master` branch at the time of writing (future release 4.5)
-cd betaflight/ 
-make arm_sdk_install # if needed, `apt install curl``
-make TARGET=SITL # comment out line: https://github.com/betaflight/betaflight/blob/master/src/main/main.c#L52
-cp ~/gym-pybullet-drones/gym_pybullet_drones/assets/eeprom.bin ~/betaflight/ # assuming both gym-pybullet-drones/ and betaflight/ were cloned in ~/
-betaflight/obj/main/betaflight_SITL.elf
-```
-
-In another terminal, run the example
-
-```sh
-conda activate drones
-cd gym_pybullet_drones/examples/
-python3 beta.py --num_drones 1 # check the steps in the file's docstrings to use multiple drones
-```
-
-## Citation
-
-If you wish, please cite our [IROS 2021 paper](https://arxiv.org/abs/2103.02142) ([and original codebase](https://github.com/utiasDSL/gym-pybullet-drones/tree/paper)) as
-
-```bibtex
-@INPROCEEDINGS{panerati2021learning,
-      title={Learning to Fly---a Gym Environment with PyBullet Physics for Reinforcement Learning of Multi-agent Quadcopter Control}, 
-      author={Jacopo Panerati and Hehui Zheng and SiQi Zhou and James Xu and Amanda Prorok and Angela P. Schoellig},
-      booktitle={2021 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
-      year={2021},
-      volume={},
-      number={},
-      pages={7512-7519},
-      doi={10.1109/IROS51168.2021.9635857}
-}
-```
 
 ## References
 
-- Carlos Luis and Jeroome Le Ny (2016) [*Design of a Trajectory Tracking Controller for a Nanoquadcopter*](https://arxiv.org/pdf/1608.05786.pdf)
-- Nathan Michael, Daniel Mellinger, Quentin Lindsey, Vijay Kumar (2010) [*The GRASP Multiple Micro UAV Testbed*](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.169.1687&rep=rep1&type=pdf)
-- Benoit Landry (2014) [*Planning and Control for Quadrotor Flight through Cluttered Environments*](http://groups.csail.mit.edu/robotics-center/public_papers/Landry15)
-- Julian Forster (2015) [*System Identification of the Crazyflie 2.0 Nano Quadrocopter*](https://www.research-collection.ethz.ch/handle/20.500.11850/214143)
+- Jacopo Panerati and Hehui Zheng and SiQi Zhou and James Xu and Amanda Prorok and Angela P. Schoellig (2021) [*Learning to Fly---a Gym Environment with PyBullet Physics for Reinforcement Learning of Multi-agent Quadcopter Control*](https://arxiv.org/abs/2103.02142) 
 - Antonin Raffin, Ashley Hill, Maximilian Ernestus, Adam Gleave, Anssi Kanervisto, and Noah Dormann (2019) [*Stable Baselines3*](https://github.com/DLR-RM/stable-baselines3)
-- Guanya Shi, Xichen Shi, Michael O’Connell, Rose Yu, Kamyar Azizzadenesheli, Animashree Anandkumar, Yisong Yue, and Soon-Jo Chung (2019)
-[*Neural Lander: Stable Drone Landing Control Using Learned Dynamics*](https://arxiv.org/pdf/1811.08027.pdf)
-- C. Karen Liu and Dan Negrut (2020) [*The Role of Physics-Based Simulators in Robotics*](https://www.annualreviews.org/doi/pdf/10.1146/annurev-control-072220-093055)
-- Yunlong Song, Selim Naji, Elia Kaufmann, Antonio Loquercio, and Davide Scaramuzza (2020) [*Flightmare: A Flexible Quadrotor Simulator*](https://arxiv.org/pdf/2009.00563.pdf)
 
-## Core Team WIP
-
-- [ ] Multi-drone `crazyflie-firmware` SITL support (@spencerteetaert, @JacopoPan)
-- [ ] Use SITL services with steppable simulation (@JacopoPan)
-
-## Desired Contributions/PRs
+## Future Work
 
 - [ ] Add motor delay, advanced ESC modeling by implementing a buffer in `BaseAviary._dynamics()`
 - [ ] Replace `rpy` with quaternions (and `ang_vel` with body rates) by editing `BaseAviary._updateAndStoreKinematicInformation()`, `BaseAviary._getDroneStateVector()`, and the `.computeObs()` methods of relevant subclasses
@@ -125,6 +54,4 @@ Run all tests from the top folder with
 ```sh
 pytest tests/
 ```
-
------
-> University of Toronto's [Dynamic Systems Lab](https://github.com/utiasDSL) / [Vector Institute](https://github.com/VectorInstitute) / University of Cambridge's [Prorok Lab](https://github.com/proroklab)
+- If the same issue above happens in Conda, please edit .bashrc with 
