@@ -6,18 +6,12 @@ This project learns an agile tethered drone perching strategy using reinforcemen
 the drone model is a MAV model inheritrd from ['gym_pybullet_drones project'](https://github.com/utiasDSL/gym-pybullet-drones) with its compatiable pid controller developed by them. the mav model is approxiamte 1:10 mass ratio to the custimised drone used to test in real-world expreiments. The RL learning algorithm ustilized RL library ['Stable-Baseline3'](https://github.com/DLR-RM/stable-baselines3). 
 
 
-This is a minimalist refactoring of the original `gym-pybullet-drones` repository, designed for compatibility with [`gymnasium`](https://github.com/Farama-Foundation/Gymnasium), [`stable-baselines3` 2.0](https://github.com/DLR-RM/stable-baselines3/pull/1327), and SITL [`betaflight`](https://github.com/betaflight/betaflight)/[`crazyflie-firmware`](https://github.com/bitcraze/crazyflie-firmware/).
-
-> **NOTE**: if you prefer to access the original codebase, presented at IROS in 2021, please `git checkout [paper|master]` after cloning the repo, and refer to the corresponding `README.md`'s.
-
-<img src="gym_pybullet_drones/assets/helix.gif" alt="formation flight" width="325"> <img src="gym_pybullet_drones/assets/helix.png" alt="control info" width="425">
-
 ## Installation
 
 Tested on Intel x64/Ubuntu 22.04 and Apple Silicon/macOS 14.1.
 
 ```sh
-git clone https://github.com/utiasDSL/gym-pybullet-drones.git
+git clone https://github.com/kyrran/gym-pybullet-drones
 cd gym-pybullet-drones/
 
 conda create -n drones python=3.10
@@ -33,7 +27,14 @@ pip3 install -e . # if needed, `sudo apt install build-essential` to install `gc
 ## Results
 
 ### Simulation Testing
-<img src="gym_pybullet_drones/assets/simulation-test-img.png" alt="rl example" width ='400'> 
+<img src="gym_pybullet_drones/assets/simulation-test-img.png" alt="simulation test" width ='400'> 
+
+| **Agent**               | **Traj A**                                                                                                                                   | **Traj B**                                                                                                                                   |
+|-------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| SACfD - 2 Demos         | <img src="gym_pybullet_drones/assets/demo2-epi4.gif" alt="demo2-epi4" width="300"/>                                                      | <img src="gym_pybullet_drones/assets/demo2-epi5.gif" alt="demo2-epi5" width="300"/>                                                      |
+| SACfD - 5 Demos         | <img src="gym_pybullet_drones/assets/demo5-epi4.gif" alt="demo5-epi4" width="300"/>                                                      | <img src="gym_pybullet_drones/assets/demo5-epi5.gif" alt="demo5-epi5" width="300"/>                                                      |
+| SACfD - 6 Demos         | <img src="gym_pybullet_drones/assets/demo6-epi4.gif" alt="demo6-epi4" width="300"/>                                                      | <img src="gym_pybullet_drones/assets/demo6-epi5.gif" alt="demo6-epi5" width="300"/>                                                      |
+| SAC - 0 Demos           | <img src="gym_pybullet_drones/assets/demo0-epi4.gif" alt="demo0-epi4" width="300"/>                                                      | <img src="gym_pybullet_drones/assets/demo0-epi5.gif" alt="demo0-epi5" width="300"/>                                                      |
 
 
 The main reasons for failed wrapping attempts in the simulation testing were either due to slow velocity, the payload losing momentum during wrapping, or the payload hitting the tether during wrapping.
