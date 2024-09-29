@@ -16,7 +16,7 @@ This approach offers a significant advancement over traditional perching methods
 
 Tested on Ubuntu 22.04
 
-```sh
+```
 git clone https://github.com/kyrran/gym-pybullet-drones
 cd gym-pybullet-drones/
 
@@ -30,7 +30,16 @@ pip3 install -e . # if needed, `sudo apt install build-essential` to install `gc
 
 ## Use
 
-command
+### Main Training Script
+
+This script handles training, evaluation (saving the best model), and testing. The training time can be adjusted by changing the `1200000` timestep parameter to fit different training goals. For example, this project shows results after 1.2 million timesteps. 
+
+The `--show-demo` flag controls whether to display the training GUI. It is generally not recommended as it significantly reduces the training speed. Training for 1.2M timesteps usually takes around 3-4 hours, while 120k timesteps take approximately 25-30 minutes.
+
+```
+cd gym-pybullet-drones/examples/
+python main.py -t 1200000 --show-demo
+```
 
 ## Results
 
@@ -60,7 +69,7 @@ Overall, the success rate of the SACfD agent in simulation is 60%, while the suc
 
 | **Normal Speed**                                                                                                                             | **Slow Motion**                                                                                                                             | **Corresponding Simulation**                                                                                                                        |
 |-------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
-| <img src="gym_pybullet_drones/assets/demo6_epi4_normal.gif" alt="demo6-epi4-normal" width="300"/>  | <img src="gym_pybullet_drones/assets/demo6_epi4_slow-crop.gif" alt="demo6-epi4-slow" width="300"/>                                     | <img src="gym_pybullet_drones/assets/demo6-epi4.gif" alt="demo6-epi4" width="300"/>                                                                                      |
+| <img src="gym_pybullet_drones/assets/demo6_epi4_normal.gif" alt="demo6-epi4-normal" width="500"/>  | <img src="gym_pybullet_drones/assets/demo6_epi4_slow-crop.gif" alt="demo6-epi4-slow" width="400"/>                                     | <img src="gym_pybullet_drones/assets/demo6-epi4.gif" alt="demo6-epi4" width="300"/>                                                                                      |
                                              
 ## conclusion
 
