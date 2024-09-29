@@ -333,7 +333,7 @@ def parse_arguments():
                         help=f"Path to demonstration files (default: {DEMO_PATH}")
 
     # Show demonstrations in visual environment
-    parser.add_argument('--show-demo', action='store_true', help='Show demonstrations in visual environment')
+    parser.add_argument('--show-demo', action='store_true', help='Show visualisation in visual environment')
 
     parser.add_argument("-params", "--hyperparams", type=str, nargs="+", action=StoreDict,
                         help="Overwrite hyperparameter (e.g. lr:0.01 batch_size:10)",)

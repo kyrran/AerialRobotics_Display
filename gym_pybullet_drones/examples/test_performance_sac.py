@@ -12,9 +12,10 @@ from stable_baselines3 import SAC,PPO
 import numpy as np
 import time
 from gym_pybullet_drones.utils.utils import str2bool, sync
-
+import pandas as pd
 import csv
 import os
+
 
 def test_agent(agent, env, save_directory, num_episodes=5):
     # Ensure the save directory exists
@@ -29,6 +30,7 @@ def test_agent(agent, env, save_directory, num_episodes=5):
         counter = 0
         
         episode_positions = []  # To store positions and times for this episode
+        episode_velocities = []  # To store velocities and times for this episode
         
         while not done:
             action, _states = agent.predict(obs, deterministic=True)
@@ -46,6 +48,14 @@ def test_agent(agent, env, save_directory, num_episodes=5):
             
             total_reward += reward
             env.render()
+            
+            # Get the velocity array
+            vel = env.get_wrapper_attr('vel_arr')
+            
+            # Append velocity and the real_time_elapsed to the velocity list
+            for v in vel:
+                episode_velocities.append((real_time_elapsed, *v))
+            
             sync(counter, start_time, env.get_wrapper_attr('CTRL_TIMESTEP'))
             if done or truncated:
                 break
@@ -60,10 +70,17 @@ def test_agent(agent, env, save_directory, num_episodes=5):
             writer.writerow(['Real_Time_Elapsed', 'Drone_X', 'Drone_Y', 'Drone_Z', 'Payload_X', 'Payload_Y', 'Payload_Z'])
             for timestep, (real_time, drone_position, payload_position) in enumerate(episode_positions):
                 writer.writerow([real_time] + list(drone_position) + list(payload_position))
+        
+        # Save velocities and real_time_elapsed for this episode to a separate CSV file
+        episode_velocities_save_path = os.path.join(save_directory, f"drone_velocities_episode_{episode + 1}.csv")
+        vel_df = pd.DataFrame(episode_velocities, columns=["Real_Time_Elapsed", "vx", "vy", "vz"])
+        vel_df.to_csv(episode_velocities_save_path, index=False)
     
     env.close()
 
-path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/400-episode/save-algorithm-SAC-09.15.2024_17.06.05-120000/"
+# path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/400-episode/save-algorithm-SAC-09.15.2024_17.06.05-120000/"
+# path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/400-episode/save-algorithm-SACfD-09.15.2024_17.05.01-120002_6_demos/"
+path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/expr/save-algorithm-SAC-09.14.2024_13.13.40-1200000/"
 model_path = path + "best_model.zip"
 save_directory = path + "episode_positions/"
 

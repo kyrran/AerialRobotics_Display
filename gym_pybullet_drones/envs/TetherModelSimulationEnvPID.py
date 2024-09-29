@@ -105,7 +105,7 @@ class TetherModelSimulationEnvPID(BaseAviary):
         # Initialize custom simulation components like tether, branch, etc.
         self.initialize_simulation_components(self.branch_init_pos)
         
-        
+        self.vel_arr=[]        
         
         self.EPISODE_LEN_SEC = 15
         
@@ -653,7 +653,8 @@ class TetherModelSimulationEnvPID(BaseAviary):
         
         weight_pos = self.weight.get_position()
         
-      
+        self.vel_arr.append(self.vel[0])
+        
         # print("[INFO] Payload Position: "
         #           "——— x {:+06.2f}, y {:+06.2f}, z {:+06.2f}".format(weight_pos[0], weight_pos[1], weight_pos[2]))
     

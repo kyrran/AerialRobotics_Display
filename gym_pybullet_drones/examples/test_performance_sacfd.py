@@ -14,6 +14,7 @@ from gym_pybullet_drones.utils.utils import str2bool, sync
 
 import csv
 import os
+import pandas as pd
 
 def test_agent(agent, env, save_directory, num_episodes=5):
     # Ensure the save directory exists
@@ -28,6 +29,7 @@ def test_agent(agent, env, save_directory, num_episodes=5):
         counter = 0
         
         episode_positions = []  # To store positions and times for this episode
+        episode_velocities = []  # To store velocities and times for this episode
         
         while not done:
             action, _states = agent.predict(obs, deterministic=True)
@@ -36,8 +38,7 @@ def test_agent(agent, env, save_directory, num_episodes=5):
             # Get drone and payload positions
             drone_position = obs[:3]  # Assuming the first 3 values in obs are the drone's x, y, z positions
             payload_position = env.get_wrapper_attr('weight').get_position()
-            drone_velocity = env.get_wrapper_attr('vel')[0]  # Assuming `self.vel` is accessible as an attribute of the environment
-            print(drone_velocity.mean())
+            
             # Calculate the real-world time elapsed since the start of the episode
             real_time_elapsed = time.time() - start_time
             
@@ -45,7 +46,15 @@ def test_agent(agent, env, save_directory, num_episodes=5):
             episode_positions.append((real_time_elapsed, drone_position, payload_position))
             
             total_reward += reward
-            # env.render()
+            env.render()
+            
+            # Get the velocity array
+            vel = env.get_wrapper_attr('vel_arr')
+            
+            # Append velocity and the real_time_elapsed to the velocity list
+            for v in vel:
+                episode_velocities.append((real_time_elapsed, *v))
+            
             sync(counter, start_time, env.get_wrapper_attr('CTRL_TIMESTEP'))
             if done or truncated:
                 break
@@ -60,11 +69,18 @@ def test_agent(agent, env, save_directory, num_episodes=5):
             writer.writerow(['Real_Time_Elapsed', 'Drone_X', 'Drone_Y', 'Drone_Z', 'Payload_X', 'Payload_Y', 'Payload_Z'])
             for timestep, (real_time, drone_position, payload_position) in enumerate(episode_positions):
                 writer.writerow([real_time] + list(drone_position) + list(payload_position))
+        
+        # Save velocities and real_time_elapsed for this episode to a separate CSV file
+        episode_velocities_save_path = os.path.join(save_directory, f"drone_velocities_episode_{episode + 1}.csv")
+        vel_df = pd.DataFrame(episode_velocities, columns=["Real_Time_Elapsed", "vx", "vy", "vz"])
+        vel_df.to_csv(episode_velocities_save_path, index=False)
     
     env.close()
 
-path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/400-episode/save-algorithm-SACfD-09.15.2024_16.47.40-120000_5_demos/"
-
+# path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/400-episode/save-algorithm-SACfD-09.15.2024_16.47.40-120000_5_demos/"
+# path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/expr/save-algorithm-SACfD-09.13.2024_12.20.51-1200000_6_demos/"
+path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/expr/save-algorithm-SACfD-09.13.2024_20.36.44-1200000_5_demos/"
+# path = "/home/kangle/Documents/FYP/gym-pybullet-drones/gym_pybullet_drones/examples/models/expr/save-algorithm-SACfD-09.13.2024_20.37.08-1200001_2_demos/"
 model_path = path + "best_model.zip"
 save_directory = path + "episode_positions/"
 
