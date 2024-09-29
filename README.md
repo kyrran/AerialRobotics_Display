@@ -26,6 +26,10 @@ pip3 install -e . # if needed, `sudo apt install build-essential` to install `gc
 
 ## Results
 
+### Hardware Experiment
+
+
+
 ### Simulation Testing
 
 | **Agent**               | **Traj A**                                                                                                                                   | **Traj B**                                                                                                                                   |
