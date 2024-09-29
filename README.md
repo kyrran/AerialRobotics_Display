@@ -8,7 +8,7 @@ the drone model is a MAV model inheritrd from ['gym_pybullet_drones project'](ht
 
 ## Installation
 
-Tested on Intel x64/Ubuntu 22.04 and Apple Silicon/macOS 14.1.
+Tested on Ubuntu 22.04
 
 ```sh
 git clone https://github.com/kyrran/gym-pybullet-drones
