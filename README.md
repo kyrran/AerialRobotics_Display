@@ -35,7 +35,7 @@ command
 ## Results
 
 ### Hardware Experiment
-
+<img src="gym_pybullet_drones/assets/full-traj-example.gif" alt="full-traj-example" width="250"/>   
 
 
 ### Simulation Testing
