@@ -27,7 +27,6 @@ pip3 install -e . # if needed, `sudo apt install build-essential` to install `gc
 ## Results
 
 ### Simulation Testing
-<img src="gym_pybullet_drones/assets/simulation-test-img.png" alt="simulation test" width ='400'> 
 
 | **Agent**               | **Traj A**                                                                                                                                   | **Traj B**                                                                                                                                   |
 |-------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
@@ -38,6 +37,11 @@ pip3 install -e . # if needed, `sudo apt install build-essential` to install `gc
 
 
 The main reasons for failed wrapping attempts in the simulation testing were either due to slow velocity, the payload losing momentum during wrapping, or the payload hitting the tether during wrapping.
+
+The full 5 runs of the simulation testing can be referred to the image below:
+
+<img src="gym_pybullet_drones/assets/simulation-test-img.png" alt="simulation test" width ='600'> 
+
 
 Overall, the success rate of the SACfD agent in simulation is 60%, while the success rate in real-world experiments is 100%. The discrepancy between simulation and experiment is reasonable due to the extra lightweight design used in the simulation. If the exact same trajectory were executed in real-world experiments, the simulated failed trajectories during testing would likely be a successful strategy.
 
