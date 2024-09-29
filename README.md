@@ -33,7 +33,7 @@ pip3 install -e . # if needed, `sudo apt install build-essential` to install `gc
 ## Results
 
 ### Simulation Testing
-<img src="gym_pybullet_drones/assets/simulation-test-img.png" alt="rl example" width="700"> 
+<img src="gym_pybullet_drones/assets/simulation-test-img.png" alt="rl example"> 
 
 
 The main reasons for failed wrapping attempts in the simulation testing were either due to slow velocity, the payload losing momentum during wrapping, or the payload hitting the tether during wrapping.
