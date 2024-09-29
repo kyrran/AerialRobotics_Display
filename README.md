@@ -6,6 +6,12 @@ This project learns an agile tethered drone perching strategy using reinforcemen
 the drone model is a MAV model inheritrd from ['gym_pybullet_drones project'](https://github.com/utiasDSL/gym-pybullet-drones) with its compatiable pid controller developed by them. the mav model is approxiamte 1:10 mass ratio to the custimised drone used to test in real-world expreiments. The RL learning algorithm ustilized RL library ['Stable-Baseline3'](https://github.com/DLR-RM/stable-baselines3). 
 
 
+The RL agent, SACfD, learns perching maneuvers from both imperfect demonstrations and online experiences, optimizing smoothness, agility, and nuanced control in the perching strategy.
+
+Key results show that the trained agent performs the perching maneuver with a 60% success rate in simulation, and transitions to real-world experiments with a 100% success rate, requiring minimal adjustments. The drone efficiently wraps its tether around branch-like structures with minimal jerk and more intended control. Additionally, the maneuver can be completed in under 1 second, representing an 18.48% improvement over previous work.
+
+This approach offers a significant advancement over traditional perching methods, which often rely on complex hardware or are limited by environmental factors. The project highlights the adaptability of RL in UAV control, making it suitable for complex maneuvers such as perching.
+
 ## Installation
 
 Tested on Ubuntu 22.04
@@ -23,6 +29,8 @@ pip3 install -e . # if needed, `sudo apt install build-essential` to install `gc
 ```
 
 ## Use
+
+command
 
 ## Results
 
