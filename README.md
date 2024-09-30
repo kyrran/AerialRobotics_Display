@@ -55,8 +55,9 @@ This is an example of full perching trajectory, operated by the human operator, 
 
 | **10 grams**                                       | **20 grams**                                         | **30 grams** (Unwrapped)                                  | **30 grams** (Wrapped)                                        |
 |----------------------------------------------------|------------------------------------------------------|-----------------------------------------------------------|---------------------------------------------------------------|
-| <img src="gym_pybullet_drones/assets/demo5-epi5_normal.gif" alt="10g" width="250"/> | <img src="gym_pybullet_drones/assets/20.gif" alt="20g" width="250"/> | <img src="gym_pybullet_drones/assets/30_unwrap.gif" alt="demo2-epi5" width="250"/> | <img src="gym_pybullet_drones/assets/30_wrap.gif" alt="30-wrap" width="250"/> |
-| Successful                                         | Too High                                              | Too High                                                   | Payload Weight Balanced                                        |
+| <img src="gym_pybullet_drones/assets/demo5-epi5_slow.gif" alt="10g" width="250"/> | <img src="gym_pybullet_drones/assets/20g.gif" alt="20g" width="250"/> | <img src="gym_pybullet_drones/assets/30_unwrap.gif" alt="demo2-epi5" width="250"/> | <img src="gym_pybullet_drones/assets/30_wrap.gif" alt="30-wrap" width="250"/> |
+| Successful - Last 1/3 Tether Contacts the Branch   | Too High                                              | Too High        | Too High & Payload Mass Balanced Drone Mass                                      |
+
 
 ### Simulation Testing
 
