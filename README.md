@@ -23,7 +23,6 @@ conda activate drones
 
 pip3 install --upgrade pip
 pip3 install -e . # if needed, `sudo apt install build-essential` to install `gcc` and build `pybullet`
-
 ```
 ## Main Training Script
 
@@ -38,6 +37,22 @@ python main.py -t 1200000 --algo SACfD --show-demo
 
 **Training System Architecture for SACfD Agent**
 ![Training System Architecture for SACfD Agent](gym_pybullet_drones/assets/sacfd.png)
+
+
+## Project Structure
+
+- **gym_pybullet_drones**
+  - **algorithms**: This folder contains the buffer system design, customized evaluation callback, and agent configuration.
+  - **assets**: This folder contains drone visuals and physics information, and relevant experiment results.
+  - **control**: This folder contains the PID controller design, inherited from the [gym_pybullet_drones](https://github.com/utiasDSL/gym-pybullet-drones) project.
+  - **demonstration**: This folder is mainly for processing 'rosbag' demonstration data we collected in the real world, and converting it into transitions that contain state, action, next state, and reward.
+  - **envs**: This folder constructs the simulation environment `TetherModelSimulationEnvPID.py`, including all components of the tethered drone system. It also contains wrappers and the base training environment `bullet_drone_env.py`, with all gym library functions like `step()`, `close()`, etc., embedded here, to interact with the agent and environmemt.
+  - **examples**: This folder is the main directory.
+    - **logs**: Contains TensorBoard data that records the training process.
+    - **models**: Contains the trained models.
+    - **main.py**: The main training script.
+  - **rewards**: This folder contains the reward system design.
+  - **utils**: These are utility scripts used here, such as terminal printing, linear learning rate scheduler, and environment module verification.
 
 
 ## Results
