@@ -51,6 +51,12 @@ This is an example of full perching trajectory, operated by the human operator, 
 | SACfD - 6 Demos         | <img src="gym_pybullet_drones/assets/demo6_epi4_normal 2.gif" alt="demo6-epi4" width="250"/>                                                      | <img src="gym_pybullet_drones/assets/demo6-epi5_normal.gif" alt="demo6-epi5" width="250"/>                                                      |
 | SAC - 0 Demos           | <img src="gym_pybullet_drones/assets/demo0-epi4_normal.gif" alt="demo0-epi4" width="250"/>                                                      | <img src="gym_pybullet_drones/assets/demo0-epi5_normal.gif" alt="demo0-epi5" width="250"/>                                                      |
 
+## Payload Mass Effects
+
+| **10 grams**                                       | **20 grams**                                         | **30 grams** (Unwrapped)                                  | **30 grams** (Wrapped)                                        |
+|----------------------------------------------------|------------------------------------------------------|-----------------------------------------------------------|---------------------------------------------------------------|
+| <img src="gym_pybullet_drones/assets/demo5-epi5_normal.gif" alt="10g" width="250"/> | <img src="gym_pybullet_drones/assets/20.gif" alt="20g" width="250"/> | <img src="gym_pybullet_drones/assets/30_unwrap.gif" alt="demo2-epi5" width="250"/> | <img src="gym_pybullet_drones/assets/30_wrap.gif" alt="30-wrap" width="250"/> |
+| Successful                                         | Too High                                              | Too High                                                   | Payload Weight Balanced                                        |
 
 ### Simulation Testing
 
