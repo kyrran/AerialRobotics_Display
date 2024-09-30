@@ -44,12 +44,12 @@ This is an example of full perching trajectory, operated by the human operator, 
 
 ### Hardware Experiment
 
-| **Agent**               | **Traj A**                                                                                                                                   | **Traj B**                                                                                                                                   |
-|-------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
-| SACfD - 2 Demos         | <img src="gym_pybullet_drones/assets/demo2-epi4_normal.gif" alt="demo2-epi4" width="250"/>                                                      | <img src="gym_pybullet_drones/assets/demo2-epi5_normal.gif" alt="demo2-epi5" width="250"/>                                                      |
-| SACfD - 5 Demos         | <img src="gym_pybullet_drones/assets/demo5-epi4_normal.gif" alt="demo5-epi4" width="250"/>                                                      | <img src="gym_pybullet_drones/assets/demo5-epi5_normal.gif" alt="demo5-epi5" width="250"/>                                                      |
-| SACfD - 6 Demos         | <img src="gym_pybullet_drones/assets/demo6_epi4_normal 2.gif" alt="demo6-epi4" width="250"/>                                                      | <img src="gym_pybullet_drones/assets/demo6-epi5_normal.gif" alt="demo6-epi5" width="250"/>                                                      |
-| SAC - 0 Demos           | <img src="gym_pybullet_drones/assets/demo0-epi4_normal.gif" alt="demo0-epi4" width="250"/>                                                      | <img src="gym_pybullet_drones/assets/demo0-epi5_normal.gif" alt="demo0-epi5" width="250"/>                                                      |
+| **Agent**            | **SACfD - 2 Demos**                                                         | **SACfD - 5 Demos**                                                         | **SACfD - 6 Demos**                                                         | **SAC - 0 Demos**                                                         |
+|----------------------|----------------------------------------------------------------------------|----------------------------------------------------------------------------|----------------------------------------------------------------------------|----------------------------------------------------------------------------|
+| **Traj A**            | <img src="gym_pybullet_drones/assets/demo2-epi4_normal.gif" alt="demo2-epi4" width="250"/> | <img src="gym_pybullet_drones/assets/demo5-epi4_normal.gif" alt="demo5-epi4" width="250"/> | <img src="gym_pybullet_drones/assets/demo6_epi4_normal 2.gif" alt="demo6-epi4" width="250"/> | <img src="gym_pybullet_drones/assets/demo0-epi4_normal.gif" alt="demo0-epi4" width="250"/> |
+| **Traj B**            | <img src="gym_pybullet_drones/assets/demo2-epi5_normal.gif" alt="demo2-epi5" width="250"/> | <img src="gym_pybullet_drones/assets/demo5-epi5_normal.gif" alt="demo5-epi5" width="250"/> | <img src="gym_pybullet_drones/assets/demo6-epi5_normal.gif" alt="demo6-epi5" width="250"/> | <img src="gym_pybullet_drones/assets/demo0-epi5_normal.gif" alt="demo0-epi5" width="250"/> |
+
+
 
 ## Payload Mass Effects
 A lighter payload facilitates easier execution of the wrapping maneuver. As the payload mass increases, the drone requires greater thrust, torque, or velocity to reach the designated position. This, however, often leads to overshooting the target location.
@@ -85,59 +85,50 @@ A lighter payload facilitates easier execution of the wrapping maneuver. As the 
 
 ## Velocity Effects
 
-<table border="1" cellpadding="5" cellspacing="0">
-  <tr>
-    <th></th>
-    <th rowspan="2">0.6 seconds (Fail)</th>
-    <th colspan="2">0.8 seconds</th>
-    <th rowspan="2">1 second - Default</th>
-    <th rowspan="2">1.2 seconds</th>
-    <th rowspan="2">1.4 seconds</th>
-  </tr>
-  <tr>
-    <th></th>
-    <th>Fail</th>
-    <th>Success</th>
-  </tr>
-  <tr>
-    <th>Videos</th>
-    <td><img src="gym_pybullet_drones/assets/0.6.gif" alt="0.6" width="250"/></td>
-    <td><img src="gym_pybullet_drones/assets/0.8-fail.gif" alt="0.8-fail" width="250"/></td>
-    <td><img src="gym_pybullet_drones/assets/0.8-succ.gif" alt="0.8-succ" width="250"/></td>
-    <td><img src="gym_pybullet_drones/assets/demo5-epi5_slow.gif" alt="demo5-epi5-slow" width="250"/></td>
-    <td colspan="2">No Video but Rosbag Recorded</td>
-  </tr>
-  <tr>
-    <th>Success Rate</th>
-    <td>0/1</td>
-    <td colspan="2">1/3</td>
-    <td>3/3</td>
-    <td>3/3</td>
-    <td>0/3</td>
-  </tr>
+As the execution time increases, the speed decreases, resulting in a lower control frequency. When the speed is too high (corresponding to a frequency above 20 Hz), the approach angle of the tether to the branch becomes nearly horizontal, which is suboptimal for wrapping. Conversely, when the speed is too low (below 16.7 Hz), the tetherand payload lack the necessary momentum to achieve effective wrapping.
 
-   <tr>
-    <th>Observations</th>
-    <td>Too High - tether over horizontal to the ground</td>
-    <td>Payload Hit Tether - tether over horizontal to the ground </td>
-    <td>Last 1/3 Tether Hit Branch - One Wrap (not usually sufficient)</td>
-    <td>Last 1/3 Tether Hit Branch </td>
-    <td>Last 1/3 Tether Hit Branch </td>
-    <td>Not Enough Velocity</td>
-  </tr>
+<table border="1" cellpadding="8" cellspacing="0" style="text-align:center; border-collapse:collapse; width:100%;">
+  <thead>
+    <tr>
+      <th rowspan="2">0.6 seconds</th>
+      <th colspan="2">0.8 seconds</th>
+      <th rowspan="2">1 second - Default</th>
+      <th rowspan="2">1.2 seconds</th>
+      <th rowspan="2">1.4 seconds</th>
+    </tr>
+    <tr>
+      <th>Fail</th>
+      <th>Success</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><img src="gym_pybullet_drones/assets/0.6.gif" alt="0.6" width="250"/></td>
+      <td><img src="gym_pybullet_drones/assets/0.8-fail.gif" alt="0.8-fail" width="250"/></td>
+      <td><img src="gym_pybullet_drones/assets/0.8-succ.gif" alt="0.8-succ" width="250"/></td>
+      <td><img src="gym_pybullet_drones/assets/demo5-epi5_slow.gif" alt="demo5-epi5-slow" width="250"/></td>
+      <td colspan="2">No Video but Rosbag Recorded</td>
+    </tr>
+    <tr>
+      <td>Success Rate: 0/1 - Too high, tether over horizontal to the ground</td>
+      <td colspan="2">Success Rate: 1/3 - Payload Hit Tether, tether over horizontal to the ground </td>
+      <td>Success Rate: 3/3 </td>
+      <td>Success Rate: 3/3 </td>
+      <td>Success Rate: 0/3 - Not enough velocity</td>
+    </tr>
+  </tbody>
 </table>
+
 
 
 ### Simulation Testing
 
-| **Agent**               | **Traj A**                                                                                                                                   | **Traj B**                                                                                                                                   |
-|-------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
-| SACfD - 2 Demos         | <img src="gym_pybullet_drones/assets/demo2-epi4.gif" alt="demo2-epi4" width="250"/>                                                      | <img src="gym_pybullet_drones/assets/demo2-epi5.gif" alt="demo2-epi5" width="250"/>                                                      |
-| SACfD - 5 Demos         | <img src="gym_pybullet_drones/assets/demo5-epi4.gif" alt="demo5-epi4" width="250"/>                                                      | <img src="gym_pybullet_drones/assets/demo5-epi5.gif" alt="demo5-epi5" width="250"/>                                                      |
-| SACfD - 6 Demos         | <img src="gym_pybullet_drones/assets/demo6-epi4.gif" alt="demo6-epi4" width="250"/>                                                      | <img src="gym_pybullet_drones/assets/demo6-epi5.gif" alt="demo6-epi5" width="250"/>                                                      |
-| SAC - 0 Demos           | <img src="gym_pybullet_drones/assets/demo0-epi4.gif" alt="demo0-epi4" width="250"/>                                                      | <img src="gym_pybullet_drones/assets/demo0-epi5.gif" alt="demo0-epi5" width="250"/>                                                      |
+| **Agent**            | **SACfD - 2 Demos**                                                         | **SACfD - 5 Demos**                                                         | **SACfD - 6 Demos**                                                         | **SAC - 0 Demos**                                                         |
+|----------------------|----------------------------------------------------------------------------|----------------------------------------------------------------------------|----------------------------------------------------------------------------|----------------------------------------------------------------------------|
+| **Traj A**            | <img src="gym_pybullet_drones/assets/demo2-epi4.gif" alt="demo2-epi4" width="250"/> | <img src="gym_pybullet_drones/assets/demo5-epi4.gif" alt="demo5-epi4" width="250"/> | <img src="gym_pybullet_drones/assets/demo6-epi4.gif" alt="demo6-epi4" width="250"/> | <img src="gym_pybullet_drones/assets/demo0-epi4.gif" alt="demo0-epi4" width="250"/> |
+| **Traj B**            | <img src="gym_pybullet_drones/assets/demo2-epi5.gif" alt="demo2-epi5" width="250"/> | <img src="gym_pybullet_drones/assets/demo5-epi5.gif" alt="demo5-epi5" width="250"/> | <img src="gym_pybullet_drones/assets/demo6-epi5.gif" alt="demo6-epi5" width="250"/> | <img src="gym_pybullet_drones/assets/demo0-epi5.gif" alt="demo0-epi5" width="250"/> |
 
-### Most Effective Strategy
+## Most Effective Strategy
 
 | **Normal Speed**                                                                                                                             | **Slow Motion**                                                                                                                             | **Corresponding Simulation**                                                                                                                        |
 |-------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
