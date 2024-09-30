@@ -175,11 +175,17 @@ Run all tests from the top folder with
 ```
 pytest tests/
 ```
-- If the method above doesn't fix it, and conda / miniconda is used, please edit .bashrc
+- If the method above doesn't fix it, and conda / miniconda is used, please edit .bashrc with these commands, either add or delete, whichever it works.
+
 ```
 export MESA_GL_VERSION_OVERRIDE=3.2
 export MESA_GLSL_VERSION_OVERRIDE=150
 ```
+or 
+```
+export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libstdc++.so.6
+```
+
 
 - Sometimes, this method can also work:
 ```
