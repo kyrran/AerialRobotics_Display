@@ -52,11 +52,37 @@ This is an example of full perching trajectory, operated by the human operator, 
 | SAC - 0 Demos           | <img src="gym_pybullet_drones/assets/demo0-epi4_normal.gif" alt="demo0-epi4" width="250"/>                                                      | <img src="gym_pybullet_drones/assets/demo0-epi5_normal.gif" alt="demo0-epi5" width="250"/>                                                      |
 
 ## Payload Mass Effects
+A lighter payload facilitates easier execution of the wrapping maneuver. As the payload mass increases, the drone requires greater thrust, torque, or velocity to reach the designated position. This, however, often leads to overshooting the target location.
 
-| **10 grams**                                       | **20 grams**                                         | **30 grams** (Unwrapped)                                  | **30 grams** (Wrapped)                                        |
-|----------------------------------------------------|------------------------------------------------------|-----------------------------------------------------------|---------------------------------------------------------------|
-| <img src="gym_pybullet_drones/assets/demo5-epi5_slow.gif" alt="10g" width="250"/> | <img src="gym_pybullet_drones/assets/20g.gif" alt="20g" width="250"/> | <img src="gym_pybullet_drones/assets/30_unwrap.gif" alt="demo2-epi5" width="250"/> | <img src="gym_pybullet_drones/assets/30_wrap.gif" alt="30-wrap" width="250"/> |
-| Successful - Last 1/3 Tether Contacts the Branch   | Too High                                              | Too High        | Too High & Payload Mass Balanced Drone Mass                                      |
+<table>
+  <tr>
+    <th rowspan="2">10 grams</th>
+    <th rowspan="2">20 grams</th>
+    <th colspan="2">30 grams</th>
+  </tr>
+  <tr>
+    <th>Unwrapped</th>
+    <th>Wrapped</th>
+  </tr>
+  <tr>
+    <td><img src="gym_pybullet_drones/assets/demo5-epi5_slow.gif" alt="10g" width="250"/></td>
+    <td><img src="gym_pybullet_drones/assets/20g.gif" alt="20g" width="250"/></td>
+    <td><img src="gym_pybullet_drones/assets/30_unwrap.gif" alt="demo2-epi5" width="250"/></td>
+    <td><img src="gym_pybullet_drones/assets/30_wrap.gif" alt="30-wrap" width="250"/></td>
+  </tr>
+  <tr>
+    <td>Successful - Last 1/3 Tether Contacts the Branch</td>
+    <td>Too High</td>
+    <td>Too High</td>
+    <td>Too High & Payload Mass Balanced Drone Mass</td>
+  </tr>
+  <tr>
+    <td>Success Rate: 3/3</td>
+    <td>Success Rate: 0/3</td>
+    <td colspan="2">Success Rate: 1/3</td>
+  </tr>
+</table>
+
 
 
 ### Simulation Testing
