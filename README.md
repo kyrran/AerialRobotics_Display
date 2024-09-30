@@ -41,7 +41,8 @@ python main.py -t 1200000 --show-demo
 
 
 ## Results
-This is an example of full perching trajectory, operated by the human operator, speeded up 10 times. We can tell that human operator has relatively longer waiting time, and more conservative perching strategy.
+
+Here gives an example of a **full perching trajectory** controlled by a human operator, sped up by a factor of **10**. It is evident that the human operator employs a more conservative perching strategy, with relatively longer waiting times.
 
 <img src="gym_pybullet_drones/assets/full-traj-example.gif" alt="full-traj-example" width="250"/>   
 
@@ -126,6 +127,8 @@ As the execution time increases, the speed decreases, resulting in a lower contr
 
 
 ### Simulation Testing
+
+The performance in both simulation and experiment is consistent, demonstrating the same subtle control techniques and trajectory shape.
 
 | **Agent**            | **SACfD - 2 Demos**                                                         | **SACfD - 5 Demos**                                                         | **SACfD - 6 Demos**                                                         | **SAC - 0 Demos**                                                         |
 |----------------------|----------------------------------------------------------------------------|----------------------------------------------------------------------------|----------------------------------------------------------------------------|----------------------------------------------------------------------------|
