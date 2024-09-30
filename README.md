@@ -6,7 +6,7 @@ A complete tethered drone system (drone-tether-payload) was simulated, incorpora
 
 The learned perching strategy demonstrated precise control, utilizing the drone’s dynamics, such as pitch angle and tether tension, to securely wrap the tether around the branch, executing smooth and efficient perching maneuvers. This was validated through real-world experiments at the Imperial College London Aerial Robotics Lab, where a 100% success rate was achieved across 52 runs, with perching completed in under 1 second — an 18.48% improvement over previous work. Despite some discrepancies between the simulated and real-world environments, primarily due to the 10 to $10^4$ times mass difference among the drone, tether, and payload between simulation and the experiment, the SACfD agents consistently performed well on selected trajectories in both setups (20 runs in simulation and 42 runs in experiments). 
 
-Learning from diverse (imperfect) demonstrations proved valuable, as the SACfD agents successfully executed perching maneuvers across all test runs on selected trajectories, demonstrating smoothness, agility, and control.
+Learning from diverse (imperfect) demonstrations is proved valuable, as the SACfD agents successfully executed perching maneuvers across all test runs on selected trajectories, demonstrating smoothness, agility, and control.
 
 The findings emphasize the importance of accurate simulation environments for transferring RL-trained behaviors to real-world applications.
 
@@ -71,7 +71,6 @@ Overall, the success rate of the SACfD agent in simulation is 60%, while the suc
                                              
 ## conclusion
 
-
  sacfd greater than sac
 
 sacfd surpass the previous work sacfd , more smooth and agile, 
@@ -79,12 +78,17 @@ sacfd surpass the previous work sacfd , more smooth and agile,
 sac learn the previous sacfd better simulatio better result
 
 suboptimal demo help, and more demo number may further facilitiate
+## Conclusion
+
+The SACfD agent outperformed the SAC agent, demonstrating more deliberate control in the perching maneuvers. SAC was more aggressive but less precise. Additionally, the SAC agent managed to learn behaviors previously only achieved by SACfD in the previous work, further highlighting the improvements in the simulation environment and training system. The optimal average perching speed found in the 52 runs of experiment is betwee, 1.48 and 1.76 m/s.
+
+The inclusion of suboptimal demonstrations played a crucial role in enhancing SACfD's adaptability, teaching the agent nuanced control techniques. Increasing the number of demonstrations is likely to further improve performance, enabling the agent to handle a wider range of scenarios. These findings underscore the effectiveness of SACfD in producing effective and agile control strategies for complex tasks like tethered drone perching.
 
 ## Future Work
-- [ ] Add dynamic training environment, such as moving branch, varying tether length
-- [ ] Investigate higher-level control, such as velocity control, instead of the position control used in this project
-- [ ] Explore frameware that directly connects PyBullet and ROS2
-- [ ] Integrate real-world physics like wind into simulation environement
+- [ ] Implement dynamic training environments, including moving branches and variable tether lengths, to improve agent robustness.
+- [ ] Investigate higher-level control strategies, such as velocity-based control, to enhance precision and performance beyond position control.
+- [ ] Explore frameworks that directly integrate PyBullet with ROS2 for seamless simulation-to-reality transfer.
+- [ ] Incorporate real-world physics elements, like wind and environmental disturbances, into the simulation to enhance realism and robustness.
 
 ## Troubleshooting
 
@@ -113,4 +117,5 @@ conda install -c conda-forge gcc=12.1.0
 
 - Jacopo Panerati and Hehui Zheng and SiQi Zhou and James Xu and Amanda Prorok and Angela P. Schoellig (2021) [*Learning to Fly---a Gym Environment with PyBullet Physics for Reinforcement Learning of Multi-agent Quadcopter Control*](https://arxiv.org/abs/2103.02142) 
 - Antonin Raffin, Ashley Hill, Maximilian Ernestus, Adam Gleave, Anssi Kanervisto, and Noah Dormann (2019) [*Stable Baselines3*](https://github.com/DLR-RM/stable-baselines3)
-- F. Hauf et al., [*Learning Tethered Perching for Aerial Robots*](https://ieeexplore.ieee.org/document/10161135) 2023 IEEE International Conference on Robotics and Automation (ICRA), London, United Kingdom, 2023, pp. 1298-1304, doi: 10.1109/ICRA48891.2023.10161135. 
+- F. Hauf et al., [*Learning Tethered Perching for Aerial Robots*](https://ieeexplore.ieee.org/document/10161135) 2023 IEEE International Conference on Robotics and Automation (ICRA), London, United Kingdom, 2023, pp. 1298-1304, doi: 10.1109/ICRA48891.2023.10161135.
+- Tommy Woodley (2024) [*Agile Trajectory Generation for Tensile Perching with Aerial Robots*](https://github.com/TommyWoodley/TommyWoodleyMEngProject)
