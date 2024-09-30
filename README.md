@@ -1,16 +1,14 @@
 # Learning Tethered Drone Agile Perching Strategy
 
-This project learns an agile tethered drone perching strategy using reinforcement learning (RL) - SAC Learning from Demonstration (SACfD) technique. A detailed PyBullet simulation environment, integrating a PID controller and realistic drone dynamics was developed to model the complex interactions between the drone, tether, and payload.
+This project focuses on developing an *agile* perching *strategy* for tethered drones using reinforcement learning (RL), specifically the SAC Learning from Demonstration (SACfD) technique. The RL algorithm utilized the ['Stable-Baselines3'](https://github.com/DLR-RM/stable-baselines3) library.
 
+A complete tethered drone system (drone-tether-payload) was simulated, incorporating realistic drone dynamics, a PID controller, and a tether-payload system to model the perching process. The drone model used is a MAV model inherited from the ['gym_pybullet_drones'](https://github.com/utiasDSL/gym-pybullet-drones) project, with its compatible PID controller developed by the same team. The simulated MAV has an approximate 1:10 mass ratio, compared to the customized drone used in real-world experiments. 
 
-the drone model is a MAV model inheritrd from ['gym_pybullet_drones project'](https://github.com/utiasDSL/gym-pybullet-drones) with its compatiable pid controller developed by them. the mav model is approxiamte 1:10 mass ratio to the custimised drone used to test in real-world expreiments. The RL learning algorithm ustilized RL library ['Stable-Baseline3'](https://github.com/DLR-RM/stable-baselines3). 
+The learned perching strategy demonstrated precise control, utilizing the drone’s dynamics, such as pitch angle and tether tension, to securely wrap the tether around the branch, executing smooth and efficient perching maneuvers. This was validated through real-world experiments at the Imperial College London Aerial Robotics Lab, where a 100% success rate was achieved across 52 runs, with perching completed in under 1 second — an 18.48% improvement over previous work. Despite some discrepancies between the simulated and real-world environments, primarily due to the 10 to $10^4$ times mass difference among the drone, tether, and payload between simulation and the experiment, the SACfD agents consistently performed well on selected trajectories in both setups (20 runs in simulation and 42 runs in experiments). 
 
+Learning from diverse (imperfect) demonstrations proved valuable, as the SACfD agents successfully executed perching maneuvers across all test runs on selected trajectories, demonstrating smoothness, agility, and control.
 
-The RL agent, SACfD, learns perching maneuvers from both imperfect demonstrations and online experiences, optimizing smoothness, agility, and nuanced control in the perching strategy.
-
-Key results show that the trained agent performs the perching maneuver with a 60% success rate in simulation, and transitions to real-world experiments with a 100% success rate, requiring minimal adjustments. The drone efficiently wraps its tether around branch-like structures with minimal jerk and more intended control. Additionally, the maneuver can be completed in under 1 second, representing an 18.48% improvement over previous work.
-
-This approach offers a significant advancement over traditional perching methods, which often rely on complex hardware or are limited by environmental factors. The project highlights the adaptability of RL in UAV control, making it suitable for complex maneuvers such as perching.
+The findings emphasize the importance of accurate simulation environments for transferring RL-trained behaviors to real-world applications.
 
 ## Installation
 
@@ -90,17 +88,29 @@ suboptimal demo help, and more demo number may further facilitiate
 
 ## Troubleshooting
 
-- On Ubuntu, with an NVIDIA card, if you receive a "Failed to create and OpenGL context" message, launch `nvidia-settings` and under "PRIME Profiles" select "NVIDIA (Performance Mode)", reboot and try again.
+- [Official Method] On Ubuntu, with an NVIDIA card, if you receive a "Failed to create and OpenGL context" message, launch `nvidia-settings` and under "PRIME Profiles" select "NVIDIA (Performance Mode)", reboot and try again.
 
 Run all tests from the top folder with
 
-```sh
+```
 pytest tests/
 ```
-- If the same issue above happens in Conda, please edit .bashrc with
+- If the method above doesn't fix it, and conda / miniconda is used, please edit .bashrc
+```
+export MESA_GL_VERSION_OVERRIDE=3.2
+export MESA_GLSL_VERSION_OVERRIDE=150
+```
+
+- Sometimes, this method can also work:
+```
+conda install -c conda-forge libgcc=5.2.0
+conda install -c anaconda libstdcxx-ng
+conda install -c conda-forge gcc=12.1.0
+```
 
 
 ## References
 
 - Jacopo Panerati and Hehui Zheng and SiQi Zhou and James Xu and Amanda Prorok and Angela P. Schoellig (2021) [*Learning to Fly---a Gym Environment with PyBullet Physics for Reinforcement Learning of Multi-agent Quadcopter Control*](https://arxiv.org/abs/2103.02142) 
 - Antonin Raffin, Ashley Hill, Maximilian Ernestus, Adam Gleave, Anssi Kanervisto, and Noah Dormann (2019) [*Stable Baselines3*](https://github.com/DLR-RM/stable-baselines3)
+- F. Hauf et al., [*Learning Tethered Perching for Aerial Robots*](https://ieeexplore.ieee.org/document/10161135) 2023 IEEE International Conference on Robotics and Automation (ICRA), London, United Kingdom, 2023, pp. 1298-1304, doi: 10.1109/ICRA48891.2023.10161135. 
