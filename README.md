@@ -1,6 +1,6 @@
 # Learning Tethered Drone Agile Perching Strategy
 
-This project focuses on developing an *agile* perching *strategy* for tethered drones using reinforcement learning (RL), specifically the SAC Learning from Demonstration (SACfD) technique. The RL algorithm utilized the ['Stable-Baselines3'](https://github.com/DLR-RM/stable-baselines3) library.
+This project focuses on developing an **agile** perching **strategy** for tethered drones using reinforcement learning (RL), specifically the SAC Learning from Demonstration (SACfD) technique. The RL algorithm utilized the ['Stable-Baselines3'](https://github.com/DLR-RM/stable-baselines3) library.
 
 A complete tethered drone system (drone-tether-payload) was simulated, incorporating realistic drone dynamics, a PID controller, and a tether-payload system to model the perching process. The drone model used is a MAV model inherited from the ['gym_pybullet_drones'](https://github.com/utiasDSL/gym-pybullet-drones) project, with its compatible PID controller developed by the same team. The simulated MAV has an approximate 1:10 mass ratio, compared to the customized drone used in real-world experiments. 
 
@@ -25,10 +25,7 @@ pip3 install --upgrade pip
 pip3 install -e . # if needed, `sudo apt install build-essential` to install `gcc` and build `pybullet`
 
 ```
-
-## Use
-
-### Main Training Script
+## Main Training Script
 
 This script handles training, evaluation (saving the best model), and testing. The training time can be adjusted by changing the `1200000` timestep parameter to fit different training goals. For example, this project shows results after 1.2 million timesteps. 
 
@@ -40,9 +37,19 @@ python main.py -t 1200000 --show-demo
 ```
 
 ## Results
+This is an example of full perching trajectory, operated by the human operator, speeded up 10 times. We can tell that human operator has relatively longer waiting time, and more conservative perching strategy.
+
+<img src="gym_pybullet_drones/assets/full-traj-example.gif" alt="full-traj-example" width="250"/>   
+
 
 ### Hardware Experiment
-<img src="gym_pybullet_drones/assets/full-traj-example.gif" alt="full-traj-example" width="250"/>   
+
+| **Agent**               | **Traj A**                                                                                                                                   | **Traj B**                                                                                                                                   |
+|-------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| SACfD - 2 Demos         | <img src="gym_pybullet_drones/assets/demo2-epi4.gif" alt="demo2-epi4" width="250"/>                                                      | <img src="gym_pybullet_drones/assets/demo2-epi5.gif" alt="demo2-epi5" width="250"/>                                                      |
+| SACfD - 5 Demos         | <img src="gym_pybullet_drones/assets/demo5-epi4_normal.gif" alt="demo5-epi4" width="250"/>                                                      | <img src="gym_pybullet_drones/assets/demo5-epi5_normal.gif" alt="demo5-epi5" width="250"/>                                                      |
+| SACfD - 6 Demos         | <img src="gym_pybullet_drones/assets/demo6_epi4_normal 2.gif" alt="demo6-epi4" width="250"/>                                                      | <img src="gym_pybullet_drones/assets/demo6-epi5_normal.gif" alt="demo6-epi5" width="250"/>                                                      |
+| SAC - 0 Demos           | <img src="gym_pybullet_drones/assets/demo0-epi4.gif" alt="demo0-epi4" width="250"/>                                                      | <img src="gym_pybullet_drones/assets/demo0-epi5.gif" alt="demo0-epi5" width="250"/>                                                      |
 
 
 ### Simulation Testing
