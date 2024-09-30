@@ -131,7 +131,7 @@ As the execution time increases, the speed decreases, resulting in a lower contr
 
 ### Simulation Testing
 
-The performance in both simulation and experiment is consistent, demonstrating the same subtle control techniques and trajectory shape.
+The performance in both simulation and experiment is consistent, demonstrating the same subtle control techniques and trajectory shape. The only dispencrancy here is the SAC agent that didn't acheive wrapping in simulation due to the slow velocity, but achieved 100% in the experiments. This's reaonsable because the simulation embeds with the worse case that the whole system is extra light weight, which is in total 
 
 | **Agent**            | **SACfD - 2 Demos**                                                         | **SACfD - 5 Demos**                                                         | **SACfD - 6 Demos**                                                         | **SAC - 0 Demos**                                                         |
 |----------------------|----------------------------------------------------------------------------|----------------------------------------------------------------------------|----------------------------------------------------------------------------|----------------------------------------------------------------------------|
