@@ -57,7 +57,7 @@ The benchmark condition: the last one-third of the tether hitting the branch. Th
 | **Traj B**            | <img src="gym_pybullet_drones/assets/demo2-epi5_normal.gif" alt="demo2-epi5" width="250"/> | <img src="gym_pybullet_drones/assets/demo5-epi5_normal.gif" alt="demo5-epi5" width="250"/> | <img src="gym_pybullet_drones/assets/demo6-epi5_normal.gif" alt="demo6-epi5" width="250"/> | <img src="gym_pybullet_drones/assets/demo0-epi5_normal.gif" alt="demo0-epi5" width="250"/> |
 | **Observed Strategy** | Achieves wrapping by making frequent, jerky pitch adjustments that cause oscillations in the tether, but the horizontal circling motion and lack of strong upward intention increase the risk of payload contact with the drone. | Employs fewer, smoother pitch adjustments with a stronger upward motion after wrapping, ensuring consistent tether tension and avoiding payload contact. | A single upward pitch and quick ascent after initial contact, maintaining continuous tension and avoiding payload contact, followed by a slight backward movement for efficient tightening. | Flies over the branch and targets a point higher and on the opposite side of the branch to promote wrapping. |
 
-## Payload Shape Effects
+#### Payload Shape Effects
 
 Smaller size and smooth shape can reduce the likelihood of the payload hitting the tether, which can lead to failed wrapping or fewer wraps.
 
@@ -67,7 +67,7 @@ Smaller size and smooth shape can reduce the likelihood of the payload hitting t
 | Success Rate: 5/5 |Success Rate: 4/5, the payload hitting the tether interrupts the wrapping|
 
 
-## Payload Mass Effects
+#### Payload Mass Effects
 A lighter payload facilitates easier execution of the wrapping maneuver. As the payload mass increases, the drone requires greater thrust, torque, or velocity to reach the designated position. This, however, often leads to overshooting the target location.
 
 <table>
@@ -99,7 +99,7 @@ A lighter payload facilitates easier execution of the wrapping maneuver. As the 
   </tr>
 </table>
 
-## Velocity Effects
+#### Velocity Effects
 
 As the execution time increases, the speed decreases, resulting in a lower control frequency. When the speed is too high (corresponding to a frequency above 20 Hz), the approach angle of the tether to the branch becomes nearly horizontal, which is suboptimal for wrapping. Conversely, when the speed is too low (below 16.7 Hz), the tetherand payload lack the necessary momentum to achieve effective wrapping.
 
