@@ -54,15 +54,6 @@ python main.py -t 1200000 --show-demo
 | SACfD - 6 Demos         | <img src="gym_pybullet_drones/assets/demo6-epi4.gif" alt="demo6-epi4" width="250"/>                                                      | <img src="gym_pybullet_drones/assets/demo6-epi5.gif" alt="demo6-epi5" width="250"/>                                                      |
 | SAC - 0 Demos           | <img src="gym_pybullet_drones/assets/demo0-epi4.gif" alt="demo0-epi4" width="250"/>                                                      | <img src="gym_pybullet_drones/assets/demo0-epi5.gif" alt="demo0-epi5" width="250"/>                                                      |
 
-
-The main reasons for failed wrapping attempts in the simulation testing were either due to slow velocity, the payload losing momentum during wrapping, or the payload hitting the tether during wrapping.
-
-The full 5 runs of the simulation testing can be referred to the image below:
-
-<img src="gym_pybullet_drones/assets/simulation-test-img.png" alt="simulation test" width ='600'> 
-
-Overall, the success rate of the SACfD agent in simulation is 60%, while the success rate in real-world experiments is 100%. The discrepancy between simulation and experiment is reasonable due to the extra lightweight design used in the simulation. If the exact same trajectory were executed in real-world experiments, the simulated failed trajectories during testing would likely be a successful strategy.
-
 ### Most Effective Strategy
 
 | **Normal Speed**                                                                                                                             | **Slow Motion**                                                                                                                             | **Corresponding Simulation**                                                                                                                        |
