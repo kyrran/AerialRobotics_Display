@@ -83,7 +83,37 @@ A lighter payload facilitates easier execution of the wrapping maneuver. As the 
   </tr>
 </table>
 
+## Velocity Effects
 
+<table border="1" cellpadding="5" cellspacing="0">
+  <tr>
+    <th colspan="6">Execution Time</th>
+  </tr>
+  <tr>
+    <th></th>
+    <th>0.8 seconds (Fail)</th>
+    <th>0.8 seconds (Success)</th>
+    <th>1 second - Default</th>
+    <th>1.2 seconds</th>
+    <th>1.4 seconds</th>
+  </tr>
+  <tr>
+    <th>Videos</th>
+    <td><img src="gym_pybullet_drones/assets/0.8-fail.gif" alt="0.8-fail" width="250"/></td>
+    <td><img src="gym_pybullet_drones/assets/0.8-succ.gif" alt="0.8-succ" width="250"/></td>
+    <td><img src="gym_pybullet_drones/assets/demo5-epi5-slow.gif" alt="demo5-epi5-slow" width="250"/></td>
+    <td>No video</td>
+    <td>No video</td>
+  </tr>
+  <tr>
+    <th>Success Rate</th>
+    <td>1/3</td>
+    <td>3/3</td>
+    <td>3/3</td>
+    <td>0/3</td>
+    <td></td>
+  </tr>
+</table>
 
 ### Simulation Testing
 
