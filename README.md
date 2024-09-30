@@ -69,15 +69,6 @@ Overall, the success rate of the SACfD agent in simulation is 60%, while the suc
 |-------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
 | <img src="gym_pybullet_drones/assets/demo6_epi4_normal.gif" alt="demo6-epi4-normal" width="500"/>  | <img src="gym_pybullet_drones/assets/demo6_epi4_slow-crop.gif" alt="demo6-epi4-slow" width="400"/>                                     | <img src="gym_pybullet_drones/assets/demo6-epi4.gif" alt="demo6-epi4" width="300"/>                                                                                      |
                                              
-## conclusion
-
- sacfd greater than sac
-
-sacfd surpass the previous work sacfd , more smooth and agile, 
-
-sac learn the previous sacfd better simulatio better result
-
-suboptimal demo help, and more demo number may further facilitiate
 ## Conclusion
 
 The SACfD agent outperformed the SAC agent, demonstrating more deliberate control in the perching maneuvers. SAC was more aggressive but less precise. Additionally, the SAC agent managed to learn behaviors previously only achieved by SACfD in the previous work, further highlighting the improvements in the simulation environment and training system. The optimal average perching speed found in the 52 runs of experiment is betwee, 1.48 and 1.76 m/s.
