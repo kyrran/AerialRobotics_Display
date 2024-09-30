@@ -36,6 +36,10 @@ cd gym-pybullet-drones/examples/
 python main.py -t 1200000 --show-demo
 ```
 
+**Training System Architecture for SACfD Agent**
+![Training System Architecture for SACfD Agent](gym_pybullet_drones/assets/sacfd.png)
+
+
 ## Results
 This is an example of full perching trajectory, operated by the human operator, speeded up 10 times. We can tell that human operator has relatively longer waiting time, and more conservative perching strategy.
 
