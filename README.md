@@ -54,6 +54,10 @@ python main.py -t 1200000 --algo SACfD --show-demo
   - **rewards**: This folder contains the reward system design.
   - **utils**: These are utility scripts used here, such as terminal printing, linear learning rate scheduler, and environment module verification.
 
+## Demonstration Dataset
+Demonstrations data is collected from Imperial College London Aerial Robotics Lab. These trajectories are from the human manual control. We classify them into 3 performance level, suboptimal, optimal and failed. Our Agent trains with 2 optimal demos, 2 optimal and 3 sub-optimal demos, and extra one failed demos respectively.
+
+<img src="gym_pybullet_drones/assets/demo-set.png" alt="full-traj-example" width="300"/>   
 
 ## Results
 
