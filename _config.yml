@@ -1,8 +1,8 @@
-title: Learning Tethered Drone Agile Perching Strategy
+title: Learning Agile Tensile Perching for Aerial Robots from Demonstration
 remote_theme: pages-themes/cayman@v0.2.0
 plugins:
 - jekyll-remote-theme # add this line to the plugins list if you already have one
 show_downloads: false
 navigation:
   - title: YouTube Video
-    url: "https://youtu.be/9JW_PtrSoJ4?si=jvSm3mjHpMmcrrkB"
+    url: "https://www.youtube.com/watch?v=9JW_PtrSoJ4"
