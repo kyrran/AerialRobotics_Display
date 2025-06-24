@@ -3,6 +3,3 @@ remote_theme: pages-themes/cayman@v0.2.0
 plugins:
 - jekyll-remote-theme # add this line to the plugins list if you already have one
 show_downloads: false
-navigation:
-  - title: YouTube Video
-    url: "https://www.youtube.com/watch?v=9JW_PtrSoJ4"
