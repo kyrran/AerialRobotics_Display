@@ -1,6 +1,6 @@
 # Learning Agile Tensile Perching for Aerial Robots from Demonstrations
 
-**This repo is only for display of experimental result. To read the code and installation instruction please go to [Aerial Robotics Group](https://github.com/AerialRoboticsGroup/agile-tethered-perching.git).**
+**This repo is only for draft display of experimental result. To read the code and installation instruction please go to [Aerial Robotics Group](https://github.com/AerialRoboticsGroup/agile-tethered-perching.git).**
 
 ## Results
 
