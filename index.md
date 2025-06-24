@@ -38,7 +38,6 @@ cd gym-pybullet-drones/examples/
 python model_training.py -t 1200000 --algo SACfD --show-demo
 ```
 
-
 ## Most Effective Strategy
 This strategy was chosen based on an analysis of its smoothness, agility, and control techniques, as well as human observation. Unlike SAC, which aggressively flies over the branch to encourage wrapping, or other SACfD strategies that either exert excessive upward force to tighten the wrapping or make abrupt up-down pitch adjustments to swing the tether, this strategy involves a single upward pitch followed by a quick ascent. It then smoothly switches back to tighten the tether, while also avoiding payload collisions. The whole trajectory balances the agility and smoothness, invovling subtle control technique with deliberate control intention.
 
@@ -46,79 +45,11 @@ This strategy was chosen based on an analysis of its smoothness, agility, and co
 |-------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
 | <img src="gym_pybullet_drones/assets/demo6_epi4_normal 2.gif" alt="demo6-epi4-normal" width="300"/>  | <img src="gym_pybullet_drones/assets/demo6_epi4_slow-crop.gif" alt="demo6-epi4-slow" width="400"/>                                     | <img src="gym_pybullet_drones/assets/demo6-epi4.gif" alt="demo6-epi4" width="300"/>                                                                                      |
 
-## PID Parameters
-
-The PID parameters for the drone control are defined in `gym_pybullet_drones/control/DSLPIDControl.py` and are specific to the CF2X drone model used in this simulation. This model is from the ['gym_pybullet_drones'](https://github.com/utiasDSL/gym-pybullet-drones) project.
-
-### Position Control (Force)
-| Parameter | P | I | D |
-|---|---|---|---|
-| X | 0.4 | 0.05 | 0.2 |
-| Y | 0.4 | 0.05 | 0.2 |
-| Z | 1.25| 0.05 | 0.5 |
-
-### Attitude Control (Torque)
-| Parameter | P | I | D |
-|---|---|---|---|
-| Roll | 70000.0 | 0.0 | 20000.0 |
-| Pitch| 70000.0 | 0.0 | 20000.0 |
-| Yaw | 60000.0 | 500.0 | 12000.0 |
                                              
 ## Future Work
 - [ ] Investigate higher-level control strategies, such as velocity-based control, to enhance precision and performance beyond position control.
 - [ ] Explore frameworks that directly integrate PyBullet with ROS2 for seamless simulation-to-reality transfer.
 - [ ] Incorporate real-world physics elements, like wind and environmental disturbances, into the simulation to enhance realism and robustness.
-
-## Code Reference
-The following code files are from ['gym_pybullet_drones'](https://github.com/utiasDSL/gym-pybullet-drones) project, with or without our own modification to suit specific project needs.
-
-```
-assets\cf2.dae
-assets\cf2x.urdf
-
-control\BaseControl.py
-control\DSLPIDControl.py
-
-envs\BaseAviary.py
-envs\TetherModelSimulationEmvPID.py #contains code from gym_pybullet_drones project
-
-utils\enums.py
-utils\utils.py
-```
-
-The following code files are from the [previous paper](https://ieeexplore.ieee.org/document/10161135), serving as the baseline in our paper work. A few modification were made to suit our project needs. 
-
-```
-main\simple_baselibe_code\previousPaperCode\createTrajectorTXTfile.py
-main\simple_baselibe_code\previousPaperCode\plotTargetedTijectory.py
-```
-
-The following heatmap shows the velocity magnitudes during the perching trajectory. This trajectory is generated using an approach from previous work.
-
-<img src="gym_pybullet_drones/assets/baseline-heatmap.png" alt="baseline-heatmap" width="300"/> 
-
-
-## Troubleshooting
-
-- If conda / miniconda is used, please edit .bashrc with these commands, either add or delete, whichever it works.
-
-```
-export MESA_GL_VERSION_OVERRIDE=3.2
-export MESA_GLSL_VERSION_OVERRIDE=150
-```
-or 
-```
-export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libstdc++.so.6
-```
-
-
-- Sometimes, this method can also work:
-```
-conda install -c conda-forge libgcc=5.2.0
-conda install -c anaconda libstdcxx-ng
-conda install -c conda-forge gcc=12.1.0
-```
-
 
 ## References
 
