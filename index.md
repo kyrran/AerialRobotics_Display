@@ -10,7 +10,7 @@ This project is an initial exploration into building a stable simulation that co
 </div>
 
 
-#### Installation
+## Installation
 
 Tested on Ubuntu 22.04
 
@@ -30,7 +30,7 @@ pip install tqdm rich
 pip install tabulate # To run the baseline code
 ```
 
-#### Most Effective Strategy
+## Most Effective Strategy
 This strategy was chosen based on an analysis of its smoothness, agility, and control techniques, as well as human observation. Unlike SAC, which aggressively flies over the branch to encourage wrapping, or other SACfD strategies that either exert excessive upward force to tighten the wrapping or make abrupt up-down pitch adjustments to swing the tether, this strategy involves a single upward pitch followed by a quick ascent. It then smoothly switches back to tighten the tether, while also avoiding payload collisions. The whole trajectory balances the agility and smoothness, invovling subtle control technique with deliberate control intention.
 
 | **Normal Speed**                                                                                                                             | **Slow Motion**                                                                                                                             | **Corresponding Simulation**                                                                                                                        |
@@ -38,12 +38,12 @@ This strategy was chosen based on an analysis of its smoothness, agility, and co
 | <img src="gym_pybullet_drones/assets/demo6_epi4_normal 2.gif" alt="demo6-epi4-normal" width="300"/>  | <img src="gym_pybullet_drones/assets/demo6_epi4_slow-crop.gif" alt="demo6-epi4-slow" width="400"/>                                     | <img src="gym_pybullet_drones/assets/demo6-epi4.gif" alt="demo6-epi4" width="300"/>                                                                                      |
 
                                              
-##### Future Work
+### Future Work
 * Investigate higher-level control strategies, such as velocity-based control, to enhance precision and performance beyond position control.
 * Explore frameworks that directly integrate PyBullet with ROS2 for seamless simulation-to-reality transfer.
 * Incorporate real-world physics elements, like wind and environmental disturbances, into the simulation to enhance realism and robustness.
 
-##### References
+### References
 
 * Jacopo Panerati and Hehui Zheng and SiQi Zhou and James Xu and Amanda Prorok and Angela P. Schoellig (2021) [*Learning to Fly---a Gym Environment with PyBullet Physics for Reinforcement Learning of Multi-agent Quadcopter Control*](https://arxiv.org/abs/2103.02142) 
 * Antonin Raffin, Ashley Hill, Maximilian Ernestus, Adam Gleave, Anssi Kanervisto, and Noah Dormann (2019) [*Stable Baselines3*](https://github.com/DLR-RM/stable-baselines3)
