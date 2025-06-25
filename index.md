@@ -39,9 +39,9 @@ This strategy was chosen based on an analysis of its smoothness, agility, and co
 
                                              
 ## Future Work
-- [ ] Investigate higher-level control strategies, such as velocity-based control, to enhance precision and performance beyond position control.
-- [ ] Explore frameworks that directly integrate PyBullet with ROS2 for seamless simulation-to-reality transfer.
-- [ ] Incorporate real-world physics elements, like wind and environmental disturbances, into the simulation to enhance realism and robustness.
+[ ] Investigate higher-level control strategies, such as velocity-based control, to enhance precision and performance beyond position control.
+[ ] Explore frameworks that directly integrate PyBullet with ROS2 for seamless simulation-to-reality transfer.
+[ ] Incorporate real-world physics elements, like wind and environmental disturbances, into the simulation to enhance realism and robustness.
 
 ## References
 
