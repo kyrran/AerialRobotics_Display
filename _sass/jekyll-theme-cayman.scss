@@ -230,7 +230,7 @@ a {
     padding: 0.8rem;
     margin-top: 0;
     margin-bottom: 1rem;
-    font: 1rem Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font: 0.9rem Consolas, "Liberation Mono", Menlo, Courier, monospace;
     color: $code-text-color;
     word-wrap: normal;
     background-color: $code-bg-color;
@@ -240,7 +240,7 @@ a {
     > code {
       padding: 0;
       margin: 0;
-      font-size: 0.9 rem;
+      font-size: 0.8 rem;
       color: $code-text-color;
       word-break: normal;
       white-space: pre;
@@ -262,7 +262,7 @@ a {
   pre {
     padding: 0.8rem;
     overflow: auto;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     line-height: 1.45;
     border-radius: 0.3rem;
     -webkit-overflow-scrolling: touch;
