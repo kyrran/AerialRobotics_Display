@@ -10,7 +10,7 @@ This project is an initial exploration into building a stable simulation that co
 </div>
 
 
-## Installation
+### Installation
 
 Tested on Ubuntu 22.04
 
@@ -30,7 +30,7 @@ pip install tqdm rich
 pip install tabulate # To run the baseline code
 ```
 
-## Most Effective Strategy
+### Most Effective Strategy
 This strategy was chosen based on an analysis of its smoothness, agility, and control techniques, as well as human observation. Unlike SAC, which aggressively flies over the branch to encourage wrapping, or other SACfD strategies that either exert excessive upward force to tighten the wrapping or make abrupt up-down pitch adjustments to swing the tether, this strategy involves a single upward pitch followed by a quick ascent. It then smoothly switches back to tighten the tether, while also avoiding payload collisions. The whole trajectory balances the agility and smoothness, invovling subtle control technique with deliberate control intention.
 
 | **Normal Speed**                                                                                                                             | **Slow Motion**                                                                                                                             | **Corresponding Simulation**                                                                                                                        |
