@@ -220,7 +220,7 @@ a {
   code {
     padding: 2px 4px;
     font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
-    font-size: 0.5rem;
+    font-size: 0.75 rem;
     color: $code-text-color;
     background-color: $code-bg-color;
     border-radius: 0.3rem;
@@ -240,7 +240,7 @@ a {
     > code {
       padding: 0;
       margin: 0;
-      font-size: 0.5rem;
+      font-size: 0.75 rem;
       color: $code-text-color;
       word-break: normal;
       white-space: pre;
