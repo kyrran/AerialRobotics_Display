@@ -112,15 +112,15 @@ a {
   background-image: linear-gradient(120deg, $header-bg-color-secondary, $header-bg-color);
 
   @include large {
-    padding: 5rem 6rem;
+    padding: 2.5rem 6rem;
   }
 
   @include medium {
-    padding: 3rem 4rem;
+    padding: 1.5rem 4rem;
   }
 
   @include small {
-    padding: 2rem 1rem;
+    padding: 1rem 1rem;
   }
 }
 
@@ -220,7 +220,7 @@ a {
   code {
     padding: 2px 4px;
     font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
-    font-size: 0.75 rem;
+    font-size: 0.9 rem;
     color: $code-text-color;
     background-color: $code-bg-color;
     border-radius: 0.3rem;
@@ -240,7 +240,7 @@ a {
     > code {
       padding: 0;
       margin: 0;
-      font-size: 0.75 rem;
+      font-size: 0.9 rem;
       color: $code-text-color;
       word-break: normal;
       white-space: pre;
